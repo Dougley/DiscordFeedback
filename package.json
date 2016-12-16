@@ -1,0 +1,35 @@
+{
+  "name": "discord-feedback",
+  "version": "0.0.0",
+  "description": "Bot for the Discord Feedback server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteamingMutt/DiscordFeedback.git"
+  },
+  "maintainers": [
+    {
+      "name": "Benjamin Hoffmeyer (TheDoctorsLife)"
+    }
+  ],
+  "author": "Remco Jongschaap <hello@dougley.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SteamingMutt/DiscordFeedback/issues"
+  },
+  "homepage": "https://github.com/SteamingMutt/DiscordFeedback#readme",
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1"
+  },
+  "dependencies": {
+    "discordie": "^0.10.0",
+    "require-directory": "^2.1.1",
+    "uservoice-nodejs": "0.0.11"
+  }
+}
