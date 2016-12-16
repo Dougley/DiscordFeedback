@@ -23,7 +23,7 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
           return
         }
         try {
-          Commands[cmd].fn(bot, msg, suffix)
+          Commands[cmd].fn(bot, msg, bot, suffix)
         } catch (e) {
           console.error(e)
           msg.reply('an error occured while proccessing this command, the admins have been alerted, please try again later')
