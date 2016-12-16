@@ -1,7 +1,7 @@
 var commands = []
 
 commands.ping = {
-  adminOnly: true,
+  adminOnly: false,
   modOnly: false,
   fn: function (client, message) {
     message.reply('Pong!')
