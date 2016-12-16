@@ -29,6 +29,8 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
           msg.reply('an error occured while proccessing this command, the admins have been alerted, please try again later')
         }
       })
+    } else {
+      msg.reply('No such command, sorry. :cry:')
     }
   }
 })
