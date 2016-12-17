@@ -5,6 +5,7 @@ const Config = require('./config.js')
 const Commands = require('./Utils/command_engine').Commands
 const AccessChecker = require('./Utils/access_checker')
 
+// Discord bot stuffs
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
   if (c.message.content.indexOf(Config.prefix) === 0) {
     var cmd = c.message.content.substr(Config.prefix.length).split(' ')[0].toLowerCase()
