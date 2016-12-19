@@ -1,5 +1,5 @@
 const Discordie = require('discordie')
-const bot = new Discordie()
+const bot = new Discordie({autoReconnect: true})
 const Events = Discordie.Events
 const Config = require('./config.js')
 const Commands = require('./Utils/command_engine').Commands
@@ -7,7 +7,7 @@ const AccessChecker = require('./Utils/access_checker')
 
 // Discord bot stuffs
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
-  if (c.message.content.indexOf(Config.prefix) === 0) {
+  if (c.message.content.indexOf(Config.prefix) === 0 || c.message.content.indexOf(bot.User.mention) === 0) {
     var cmd = c.message.content.substr(Config.prefix.length).split(' ')[0].toLowerCase()
     var suffix
     suffix = c.message.content.substr(Config.prefix.length).split(' ')
@@ -40,9 +40,12 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   console.log('Feedback bot is ready!')
 })
 
-bot.Dispatcher.on(Events.DISCONNECTED, () => {
-  console.error('Connection to Discord has been lost, exiting...')
-  process.exit(1)
+bot.Dispatcher.on(Events.DISCONNECTED, (e) => {
+  console.error('Connection to Discord has been lost... Delay till reconnect:', e.delay)
+})
+
+bot.Dispatcher.on(Events.GATEWAY_RESUMED, () => {
+  console.log('Reconnected.')
 })
 
 bot.connect({
