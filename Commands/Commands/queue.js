@@ -33,12 +33,13 @@ commands.newCardInit = {
 commands.registerVote = {
   internal: true,
   fn: function (msg, reaction, bot, uv) {
+    if (!state[msg.id]) return
     switch (state[msg.id].type) {
       case 'newCard': {
         if (reaction.id === '302137374920671233') {
           state[msg.id].reports++
           if (state[msg.id].reports === config.discord.reportThreshold) {
-            bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${state[msg.id].UvId} (${msg.embeds[0].title}) has been send off for admin review.`)
+            bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${state[msg.id].UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
             state[msg.id].type = 'adminReviewDelete'
             switchIDs(state[msg.id], bot)
             delete state[msg.id]
