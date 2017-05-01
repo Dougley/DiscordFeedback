@@ -1,8 +1,12 @@
 {
     "extends": "standard",
     "installedESLint": true,
+    "indent": ["error", 4],
     "plugins": [
         "standard",
         "promise"
-    ]
+    ],
+    "env": {
+        "node": true
+    }
 }

@@ -1,36 +1,29 @@
 var commands = []
 
+var checker = require('../../Utils/access_checker')
+var logger = require('../../Utils/error_loggers')
+var config = require('../../config.js')
+var bugsnag = require('bugsnag')
+
+bugsnag.register(config.discord.bugsnag)
+
 commands.ping = {
-  adminOnly: false,
-  modOnly: false,
-  fn: function (client, message) {
-    message.reply('Pong!')
-  }
-}
-
-commands['admin-only'] = {
+  phantom: true,
   adminOnly: true,
   modOnly: false,
-  fn: function (client, message, suffix) {
-    message.channel.sendMessage(suffix)
+  fn: function (bot, msg) {
+    msg.channel.sendMessage('Pong!')
   }
 }
 
-commands['mod-only'] = {
-  adminOnly: false,
-  modOnly: true,
-  fn: function (client, message, suffix) {
-    message.channel.sendMessage(suffix)
-  }
-}
-
-commands['shutdown'] = {
+commands.shutdown = {
+  phantom: true,
   adminOnly: true,
   modOnly: false,
-  fn: function (client, message, bot, suffix) {
-    message.reply('Okay, shutting down.')
-    console.log('I was shutdown! I would give a talking to', message.author.username, ', I think they were the one who shut me down.')
-    bot.disconnect()
+  fn: function (bot, msg) {
+    msg.reply('shutting down...').then(() => {
+      process.exit(0)
+    })
   }
 }
 

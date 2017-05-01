@@ -4,7 +4,8 @@
   "description": "Bot for the Discord Feedback server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -28,8 +29,10 @@
     "eslint-plugin-standard": "^2.0.1"
   },
   "dependencies": {
+    "bugsnag": "^1.9.1",
     "discordie": "^0.10.0",
+    "html-entities": "^1.2.1",
     "require-directory": "^2.1.1",
-    "uservoice-nodejs": "0.0.11"
+    "uservoice-nodejs": "^0.0.13"
   }
 }
