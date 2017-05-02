@@ -6,8 +6,7 @@ const Commands = require('./Utils/command_engine').Commands
 const AccessChecker = require('./Utils/access_checker')
 const ErrorLog = require('./Utils/error_loggers')
 const bot = new Discordie({
-  autoReconnect: true,
-  messageCacheLimit: Config.discord.messageCacheLimit
+  autoReconnect: true
 })
 
 var bugsnag = require('bugsnag')
@@ -37,7 +36,7 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
       if (Commands[cmd].internal === true) return
       AccessChecker.getLevel(msg.member, (level) => {
         if (level === 0 && Commands[cmd].adminOnly === true || level === 0 && Commands[cmd].modOnly === true) {
-          msg.reply('this command is restricted, and not available to you.')
+          if (Commands[cmd].phantom !== undefined) msg.reply('this command is restricted, and not available to you.')
           return
         }
         if (level === 1 && Commands[cmd].adminOnly === true) {
@@ -61,7 +60,9 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
 bot.Dispatcher.on(Events.MESSAGE_REACTION_ADD, (m) => {
   if (m.user.id !== bot.User.id) {
     if (m.channel.id === Config.discord.feedChannel || m.channel.name === 'admin-queue') {
-      Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient)
+      bot.Channels.get(Config.discord.feedChannel).fetchMessages().then(() => {
+        Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient, m.user)
+      })
     }
   }
 })
