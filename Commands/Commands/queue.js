@@ -62,7 +62,7 @@ commands.registerVote = {
               }).then((s) => {
                 if (user !== null) {
                   bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your vote has been registered.`).then(c => {
-                    setTimeout(() => c.delete, 5000)
+                    setTimeout(() => c.delete(), 5000)
                   })
                 }
               }).catch(e => {
@@ -85,7 +85,7 @@ commands.registerVote = {
               }).catch(e => {
                  if (e === 'Not found') {
                   bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
-                    setTimeout(() => c.delete, 5000)
+                    setTimeout(() => c.delete(), 5000)
                   })
                 } else {
                   logger.log(bot, {
