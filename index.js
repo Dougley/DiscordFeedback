@@ -39,10 +39,6 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
           if (Commands[cmd].phantom !== undefined) msg.reply('this command is restricted, and not available to you.')
           return
         }
-        if (level === 1 && Commands[cmd].adminOnly === true) {
-          if (Commands[cmd].phantom !== undefined) msg.reply('sorry, only admins can use this command.')
-          return
-        }
         try {
           Commands[cmd].fn(bot, msg, suffix, uvClient)
         } catch (e) {
