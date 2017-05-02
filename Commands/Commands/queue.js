@@ -41,8 +41,9 @@ commands.registerVote = {
       console.warn('Warning! Vote registering failed due to the message not being cached!')
       return
     }
-    if (!state[msg.id]) {
+    if (state[msg.id] === undefined) {
       console.warn('Warning! Vote registering failed due to the report not being known to memory!')
+      return
     }
     switch (state[msg.id].type) {
       case 'newCard': {
