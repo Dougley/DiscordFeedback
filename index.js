@@ -21,7 +21,7 @@ var uvClient = new UserVoice.Client({
 })
 
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
-  if (c.message.channel.id === Config.discord.feedChannel && c.message.author.id !== bot.User.id) {
+  if (c.message.channel.id === Config.discord.feedChannel && c.message.author.id !== bot.User.id && c.message.author.bot) {
     Commands['newCardInit'].fn(c.message)
     return
   }

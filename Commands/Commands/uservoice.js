@@ -149,13 +149,20 @@ commands.comment = {
           msg.reply('your comment was added.', false, {
             title: entities.decode(data.comment.suggestion.title),
             url: data.comment.suggestion.url,
-            description: entities.decode(data.comment.text),
+            description: entities.decode((data.comment.suggestion.text.length !== 2000) ? data.comment.suggestion.text : '*Content too long*'),
             color: 0x3498db,
             author: {
-              name: entities.decode(data.comment.creator.name),
-              url: data.comment.creator.url,
-              icon_url: data.comment.creator.avatar_url
-            }
+              name: entities.decode(data.comment.suggestion.creator.name),
+              url: data.comment.suggestion.creator.url,
+              icon_url: data.comment.suggestion.creator.avatar_url
+            },
+            fields: [
+              {
+                name: `${entities.decode(data.comment.creator.name)} commented on this:`,
+                value: entities.decode(data.comment.text),
+                inline: false
+              }
+            ]
           })
         }).catch(e => {
           if (e.statusCode === 404) {
