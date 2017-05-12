@@ -88,7 +88,7 @@ commands.submit = {
                 url: data.suggestion.creator.url
               },
               title: entities.decode(data.suggestion.title),
-              description: (data.comment.suggestion.text.length !== 2000) ? entities.decode(data.comment.suggestion.text) : '*Content too long*',
+              description: (data.suggestion.text.length !== 2000) ? entities.decode(data.suggestion.text) : '*Content too long*',
               url: data.suggestion.url,
               footer: {
                 text: entities.decode(data.suggestion.category.name)
