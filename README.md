@@ -11,6 +11,6 @@ in the repository root
 # Run
 You can run the bot just as easliy as you can install it, just run
 ```
-node index.js
+npm start
 ```
 in the repository root

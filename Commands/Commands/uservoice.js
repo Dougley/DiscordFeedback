@@ -149,7 +149,7 @@ commands.comment = {
           msg.reply('your comment was added.', false, {
             title: entities.decode(data.comment.suggestion.title),
             url: data.comment.suggestion.url,
-            description: (data.suggestion.text !== null) ? ((data.suggestion.text.length < 1900) ? entities.decode(data.suggestion.text) : '*Content too long*') : '*No content*',
+            description: (data.comment.suggestion.text !== null) ? ((data.comment.suggestion.text.length < 1900) ? entities.decode(data.comment.suggestion.text) : '*Content too long*') : '*No content*',
             color: 0x3498db,
             author: {
               name: entities.decode(data.comment.suggestion.creator.name),
