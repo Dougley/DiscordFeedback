@@ -5,6 +5,7 @@ const Config = require('./config.js')
 const Commands = require('./Utils/command_engine').Commands
 const AccessChecker = require('./Utils/access_checker')
 const ErrorLog = require('./Utils/error_loggers')
+const GenericLog = require('./Utils/generic_logger')
 const bot = new Discordie({
   autoReconnect: true
 })
@@ -35,12 +36,18 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
     if (Commands[cmd]) {
       if (Commands[cmd].internal === true) return
       AccessChecker.getLevel(msg.member, (level) => {
-        if (level === 0 && Commands[cmd].adminOnly === true || level === 0 && Commands[cmd].modOnly === true) {
+        if (level === 0 && Commands[cmd].modOnly === true) {
           if (Commands[cmd].phantom !== undefined) msg.reply('this command is restricted, and not available to you.')
           return
-        }
+        } else if (level !== 2 && Commands[cmd].adminOnly === true) return
         try {
-          Commands[cmd].fn(bot, msg, suffix, uvClient)
+          Commands[cmd].fn(bot, msg, suffix, uvClient, function (res) {
+            GenericLog.log(bot, c.message.author, {
+              message: `Ran the command ${cmd}`,
+              result: res.result,
+              affected: res.affected
+            })
+          })
         } catch (e) {
           ErrorLog.log(bot, {
             cause: cmd,

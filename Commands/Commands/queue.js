@@ -155,6 +155,7 @@ function deleteFromUV (UVID, uvClient, bot) {
 
 function getMail (uv, user) {
   return new Promise(function (resolve, reject) {
+    if (config.debug === true) return resolve('hello@dougley.com') // no dox pls
     uv.loginAsOwner().then(i => {
       i.get('users/search.json', {
         guid: user

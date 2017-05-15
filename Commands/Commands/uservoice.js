@@ -61,7 +61,7 @@ commands.vote = {
 commands.submit = {
   adminOnly: false,
   modOnly: false,
-  fn: function (bot, msg, suffix, uvClient) {
+  fn: function (bot, msg, suffix, uvClient, cBack) {
     let channels = require('../../channels')
     let IDs = Object.getOwnPropertyNames(channels)
     if (IDs.indexOf(msg.channel.id) === -1) return
@@ -93,6 +93,9 @@ commands.submit = {
               footer: {
                 text: entities.decode(data.suggestion.category.name)
               }
+            })
+            cBack({
+              result: data.suggestion.url
             })
           }).catch(e => {
             logger.log(bot, {
@@ -198,6 +201,7 @@ commands.comment = {
 
 function getMail (uv, user) {
   return new Promise(function (resolve, reject) {
+    if (config.debug === true) return resolve('hello@dougley.com') // no dox pls
     uv.loginAsOwner().then(i => {
       i.get('users/search.json', {
         guid: user

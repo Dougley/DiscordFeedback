@@ -1,12 +1,15 @@
 const Config = require('../config.js')
 
 exports.log = function (bot, user, cObj) {
+  var fields = []
+  if (cObj.result !== undefined) fields.push({name: 'This resulted in the following:', value: cObj.result, inline: false})
   bot.Channels.find((c) => c.name === 'bot-log').sendMessage('', false, {
     color: 0x3498db,
     author: {
-      name: `${cObj.user.username} (${cObj.user.id})`,
-      icon_url: cObj.user.avatarURL
+      name: `${user.username} (${user.id})`,
+      icon_url: user.avatarURL
     },
+    fields: fields,
     timestamp: new Date(),
     title: 'This user did the following action:',
     description: cObj.message,
