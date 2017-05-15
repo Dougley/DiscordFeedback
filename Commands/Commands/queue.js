@@ -51,12 +51,12 @@ commands.registerVote = {
         if (reaction.id === '302137374920671233') {
           checker.getLevel(user.memberOf('268811439588900865'), function (l) {
             if (l > 0) {
+              state[msg.id].reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the feed',
                 affected: state[msg.id].UvId,
                 result: (state[msg.id].reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
               })
-              state[msg.id].reports++
               if (state[msg.id].reports === config.discord.reportThreshold) {
                 bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${state[msg.id].UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
                 state[msg.id].type = 'adminReviewDelete'
