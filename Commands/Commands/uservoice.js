@@ -11,7 +11,7 @@ entities = new Entities()
 commands.vote = {
   adminOnly: false,
   modOnly: false,
-  fn: function (bot, msg, suffix, uvClient) {
+  fn: function (bot, msg, suffix, uvClient, cBack) {
     msg.channel.sendTyping()
     getMail(uvClient, msg.author.id).then(email => {
       uvClient.loginAs(email).then(c => {
@@ -26,6 +26,9 @@ commands.vote = {
           to: 1
         }).then((s) => {
           msg.reply('vote registered, thanks!')
+          cBack({
+            affected: id
+          })
         }).catch(e => {
           if (e.statusCode === 404) {
             msg.reply('unable to find a suggestion using your query.')
@@ -129,7 +132,7 @@ commands.submit = {
 commands.comment = {
   adminOnly: false,
   modOnly: false,
-  fn: function (bot, msg, suffix, uvClient) {
+  fn: function (bot, msg, suffix, uvClient, cBack) {
     msg.channel.sendTyping()
     getMail(uvClient, msg.author.id).then(email => {
       uvClient.loginAs(email).then(c => {
@@ -166,6 +169,10 @@ commands.comment = {
                 inline: false
               }
             ]
+          })
+          cBack({
+            affected: id,
+            result: 'A new comment was created'
           })
         }).catch(e => {
           if (e.statusCode === 404) {

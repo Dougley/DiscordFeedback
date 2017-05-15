@@ -43,7 +43,7 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
         try {
           Commands[cmd].fn(bot, msg, suffix, uvClient, function (res) {
             GenericLog.log(bot, c.message.author, {
-              message: `Ran the command ${cmd}`,
+              message: `Ran the command \`${cmd}\``,
               result: res.result,
               affected: res.affected
             })
