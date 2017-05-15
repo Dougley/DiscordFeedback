@@ -48,13 +48,17 @@ commands.registerVote = {
     switch (state[msg.id].type) {
       case 'newCard': {
         if (reaction.id === '302137374920671233') {
-          state[msg.id].reports++
-          if (state[msg.id].reports === config.discord.reportThreshold) {
-            bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${state[msg.id].UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
-            state[msg.id].type = 'adminReviewDelete'
-            switchIDs(state[msg.id], bot)
-            delete state[msg.id]
-          }
+          check.getLevel(user.memberOf('268811439588900865'), function (l) {
+            if (l > 0) {
+              state[msg.id].reports++
+              if (state[msg.id].reports === config.discord.reportThreshold) {
+                bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${state[msg.id].UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
+                state[msg.id].type = 'adminReviewDelete'
+                switchIDs(state[msg.id], bot)
+                delete state[msg.id]
+              }
+            }
+          })
         } else if (reaction.id === '302138464986595339') {
           getMail(uv, user.id).then(f => {
             uv.loginAs(f).then(c => {
