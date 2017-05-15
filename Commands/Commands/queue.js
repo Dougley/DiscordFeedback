@@ -49,7 +49,7 @@ commands.registerVote = {
     switch (state[msg.id].type) {
       case 'newCard': {
         if (reaction.id === '302137374920671233') {
-          check.getLevel(user.memberOf('268811439588900865'), function (l) {
+          checker.getLevel(user.memberOf('268811439588900865'), function (l) {
             if (l > 0) {
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the feed',
