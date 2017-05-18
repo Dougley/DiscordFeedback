@@ -67,6 +67,9 @@ commands.delete = {
               msg.reply('thanks for reconsidering, the operation has been cancelled.')
             }
             if (r === true) {
+              cBack({
+                affected: id
+              })
               msg.reply('your report has been sent to the admins, thanks!')
               bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`The following card has been marked for ***deletion*** by ${msg.author.username}#${msg.author.discriminator} for the following reason:\n${content}\n\nPlease review this report.`, false, {
                 color: 0x3498db,
