@@ -6,6 +6,8 @@ var genlog = require('../../Utils/generic_logger')
 var config = require('../../config.js')
 var bugsnag = require('bugsnag')
 
+var UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
+
 bugsnag.register(config.discord.bugsnag)
 
 try {
@@ -31,6 +33,84 @@ commands.newCardInit = {
     msg.addReaction({
       id: '302138464986595339',
       name: 'upvote'
+    })
+  }
+}
+
+commands.delete = {
+  modOnly: true,
+  adminOnly: false,
+  fn: function(bot, msg, suffix, uv, cBack) {
+    msg.channel.sendTyping()
+    let parts = suffix.split(' ')[0].match(UVRegex)
+    let part = suffix.split(' ')
+    part.shift()
+    let content = part.join(' ')
+    if (content.length === 0) {
+      msg.reply('you need to provide a reason.')
+      return
+    }
+    let id
+    if (parts === null) {
+      id = suffix.split(' ')[0]
+    } else {
+      id = parts[2]
+    }
+    uv.loginAsOwner().then(c => {
+      c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
+        msg.reply(`you're about to mark ${id} for **DELETION** because \`${content}\`\n__Are you sure this is correct?__ (yes/no)`).then(() => {
+          wait(bot, msg).then((r) => {
+            if (r === null) {
+              msg.reply('you took too long to anwser, the operation has been cancelled.')
+            }
+            if (r === false) {
+              msg.reply('thanks for reconsidering, the operation has been cancelled.')
+            }
+            if (r === true) {
+              msg.reply('your report has been sent to the admins, thanks!')
+              bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`The following card has been marked for ***deletion*** by ${msg.author.username}#${msg.author.discriminator} for the following reason:\n${content}\n\nPlease review this report.`, false, {
+                color: 0x3498db,
+                author: {
+                  name: data.suggestion.creator.name,
+                  icon_url: data.suggestion.creator.avatar_url,
+                  url: data.suggestion.creator.url
+                },
+                title: data.suggestion.title,
+                description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+                url: data.suggestion.url,
+                footer: {
+                  text: data.suggestion.category.name
+                }
+              }).then(b => {
+                b.addReaction({
+                  name: 'approve',
+                  id: '302137375092375553'
+                })
+                b.addReaction({
+                  name: 'deny',
+                  id: '302137375113609219'
+                })
+                state[b.id] = {
+                  type: 'adminReviewDelete',
+                  author: msg.author,
+                  UvId: id,
+                  embed: b.embeds[0]
+                }
+              })
+            }
+          })
+        })
+      }).catch((e) => {
+        if (e.statusCode === 404) {
+          msg.reply('unable to find a suggestion using your query.')
+        } else {
+          logger.log(bot, {
+            cause: 'delete_search',
+            message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+          })
+          msg.reply('an error occured, please try again later.')
+        }
+      })
     })
   }
 }
@@ -187,6 +267,26 @@ function getMail (uv, user) {
         }
       }).catch(reject)
     }).catch(reject)
+  })
+}
+
+function wait(bot, msg) {
+  let yn = /^y(es)?$|^n(o)?$/
+  return new Promise((resolve, reject) => {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff(c) {
+      var time = setTimeout(() => {
+        resolve(null)
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+      }, config.timeouts.duplicateConfirm) // We won't wait forever for the person to anwser
+      if (c.message.channel.id !== msg.channel.id) return
+      if (c.message.author.id !== msg.author.id) return
+      if (c.message.content.match(yn) === null) return
+      else {
+        resolve((c.message.content.match(/^y(es)?/) !== null) ? true : false)
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+        clearTimeout(time)
+      }
+    })
   })
 }
 
