@@ -209,6 +209,11 @@ commands.dupe = {
                     name: 'Target Card: Date of creation',
                     value: data2.suggestion.created_at,
                     inline: true
+                  },
+                  {
+                    name: 'Original Cards:',
+                    value: `[Target Card](${data2.suggestion.url})\n[Merge Candidate](${data.suggestion.url})`,
+                    inline: false
                   }],
                   title: data2.suggestion.title,
                   description: "These suggestions will be merged.",
