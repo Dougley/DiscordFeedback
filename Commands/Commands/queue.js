@@ -366,7 +366,7 @@ commands.registerVote = {
           merge(state[msg.id].UV1, state[msg.id].UV2, uv).catch((e) => {
             logger.log(bot, {
               cause: 'merge_apply',
-              message: e.statusCode
+              message: e.message
             })
           })
           delete state[msg.id]
