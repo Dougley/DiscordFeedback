@@ -152,18 +152,18 @@ commands.dupe = {
           msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
             color: 0x3498db,
             author: {
-              name: data.suggestion.creator.name,
-              icon_url: data.suggestion.creator.avatar_url,
-              url: data.suggestion.creator.url
+              name: data2.suggestion.creator.name,
+              icon_url: data2.suggestion.creator.avatar_url,
+              url: data2.suggestion.creator.url
             },
-            title: data.suggestion.title,
-            description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+            title: data2.suggestion.title,
+            description: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
             fields: [{
               name: 'Votes',
               value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
             }],
             footer: {
-              text: data.suggestion.category.name
+              text: data2.suggestion.category.name
             }
           }).then(() => {
             wait(bot, msg).then((r) => {
@@ -181,19 +181,19 @@ commands.dupe = {
                 bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge ${id2} into ${id}? This will result in the following card.`, false, {
                   color: 0x3498db,
                   author: {
-                    name: data.suggestion.creator.name,
-                    icon_url: data.suggestion.creator.avatar_url,
-                    url: data.suggestion.creator.url
+                    name: data2.suggestion.creator.name,
+                    icon_url: data2.suggestion.creator.avatar_url,
+                    url: data2.suggestion.creator.url
                   },
                   fields: [{
                     name: 'Votes',
                     value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
                   }],
-                  title: data.suggestion.title,
-                  description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
-                  url: data.suggestion.url,
+                  title: data2.suggestion.title,
+                  description: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
+                  url: data2.suggestion.url,
                   footer: {
-                    text: data.suggestion.category.name
+                    text: data2.suggestion.category.name
                   }
                 }).then(b => {
                   b.addReaction({
