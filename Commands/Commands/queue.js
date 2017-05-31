@@ -124,6 +124,10 @@ commands.dupe = {
   adminOnly: false,
   fn: function(bot, msg, suffix, uv, cBack) {
     msg.channel.sendTyping()
+    if (!suffix) {
+      msg.reply("you're missing parameters, please review <#268812893087203338>")
+      return
+    }
     let parts = suffix.split(' ')[0].match(UVRegex)
     let parts2 = suffix.split(' ')[1].match(UVRegex)
     if (!parts || !parts2) {
@@ -183,7 +187,7 @@ commands.dupe = {
                   },
                   fields: [{
                     name: 'Votes',
-                    value: parseInt(data.suggestion.votes) + parseInt(data2.suggestion.votes)
+                    value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
                   }],
                   title: data.suggestion.title,
                   description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
