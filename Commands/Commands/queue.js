@@ -178,20 +178,40 @@ commands.dupe = {
                   affected: id
                 })
                 msg.reply('your report has been sent to the admins, thanks!')
-                bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge ${id2} into ${id}? This will result in the following card.`, false, {
+                bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
                   color: 0x3498db,
-                  author: {
-                    name: data2.suggestion.creator.name,
-                    icon_url: data2.suggestion.creator.avatar_url,
-                    url: data2.suggestion.creator.url
-                  },
                   fields: [{
-                    name: 'Votes',
-                    value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
+                    name: 'Merge Candidate: Content',
+                    value: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+                    inline: false
+                  },
+                  {
+                    name: 'Target Card: Content',
+                    value: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
+                    inline: false
+                  },
+                  {
+                    name: 'Merge Candidate: Votes',
+                    value: parseInt(data.suggestion.vote_count),
+                    inline: true
+                  },
+                  {
+                    name: 'Merge Candidate: Date of creation',
+                    value: data.suggestion.created_at,
+                    inline: true
+                  },
+                  {
+                    name: 'Target Card: Votes',
+                    value: parseInt(data2.suggestion.vote_count),
+                    inline: true
+                  },
+                  {
+                    name: 'Target Card: Date of creation',
+                    value: data2.suggestion.created_at,
+                    inline: true
                   }],
                   title: data2.suggestion.title,
-                  description: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
-                  url: data2.suggestion.url,
+                  description: "These suggestions will be merged.",
                   footer: {
                     text: data2.suggestion.category.name
                   }
