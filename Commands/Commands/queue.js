@@ -182,12 +182,12 @@ commands.dupe = {
                   color: 0x3498db,
                   fields: [{
                     name: 'Merge Candidate: Content',
-                    value: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+                    value: (data.suggestion.text.length < 500) ? data.suggestion.text : '*Content too long*',
                     inline: false
                   },
                   {
                     name: 'Target Card: Content',
-                    value: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
+                    value: (data2.suggestion.text.length < 500) ? data2.suggestion.text : '*Content too long*',
                     inline: false
                   },
                   {
