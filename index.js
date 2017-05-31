@@ -14,12 +14,18 @@ var bugsnag = require('bugsnag')
 
 bugsnag.register(Config.discord.bugsnag)
 
-var uvClient = new UserVoice.Client({
-  subdomain: Config.uservoice.subdomain.trim(),
-  domain: Config.uservoice.domain.trim(),
-  apiKey: Config.uservoice.key.trim(),
-  apiSecret: Config.uservoice.secret.trim()
-})
+var uvClient = {
+  v1: new UserVoice.Client({
+    subdomain: Config.uservoice.subdomain.trim(),
+    domain: Config.uservoice.domain.trim(),
+    apiKey: Config.uservoice.key.trim(),
+    apiSecret: Config.uservoice.secret.trim()
+  }),
+  v2: new UserVoice.ClientV2({
+    clientId: Config.uservoice.key.trim(),
+    subdomain: Config.uservoice.UVDomain.trim()
+  })
+}
 
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
   if (c.message.channel.id === Config.discord.feedChannel && c.message.author.id !== bot.User.id && c.message.author.bot) {

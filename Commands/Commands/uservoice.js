@@ -14,7 +14,7 @@ commands.vote = {
   fn: function (bot, msg, suffix, uvClient, cBack) {
     msg.channel.sendTyping()
     getMail(uvClient, msg.author.id).then(email => {
-      uvClient.loginAs(email).then(c => {
+      uvClient.v1.loginAs(email).then(c => {
         let parts = suffix.match(UVRegex)
         let id
         if (parts === null) {
@@ -74,7 +74,7 @@ commands.submit = {
     } else {
       msg.channel.sendTyping()
       getMail(uvClient, msg.author.id).then(email => {
-        uvClient.loginAs(email).then(c => {
+        uvClient.v1.loginAs(email).then(c => {
           c.post(`forums/${config.uservoice.forumId}/suggestions.json`, {
             suggestion: {
               title: content[0],
@@ -135,7 +135,7 @@ commands.comment = {
   fn: function (bot, msg, suffix, uvClient, cBack) {
     msg.channel.sendTyping()
     getMail(uvClient, msg.author.id).then(email => {
-      uvClient.loginAs(email).then(c => {
+      uvClient.v1.loginAs(email).then(c => {
         let s = suffix.split(' ')
         let idt = s[0]
         s.shift()
@@ -209,7 +209,7 @@ commands.comment = {
 function getMail (uv, user) {
   return new Promise(function (resolve, reject) {
     if (config.debug === true) return resolve('hello@dougley.com') // no dox pls
-    uv.loginAsOwner().then(i => {
+    uv.v1.loginAsOwner().then(i => {
       i.get('users/search.json', {
         guid: user
       }).then((data) => {

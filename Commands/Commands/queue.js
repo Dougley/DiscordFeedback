@@ -23,6 +23,7 @@ commands.newCardInit = {
     state[msg.id] = {
       type: 'newCard',
       reports: 0,
+      reporters: [],
       embed: msg.embeds[0],
       UvId: msg.embeds[0].footer.text.split('ID: ')[1]
     }
@@ -56,7 +57,7 @@ commands.delete = {
     } else {
       id = parts[2]
     }
-    uv.loginAsOwner().then(c => {
+    uv.v1.loginAsOwner().then(c => {
       c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
         msg.reply(`you're about to mark ${id} for **DELETION** because \`${content}\`\n__Are you sure this is correct?__ (yes/no)`).then(() => {
           wait(bot, msg).then((r) => {
@@ -118,6 +119,123 @@ commands.delete = {
   }
 }
 
+commands.dupe = {
+  modOnly: true,
+  adminOnly: false,
+  fn: function(bot, msg, suffix, uv, cBack) {
+    msg.channel.sendTyping()
+    let parts = suffix.split(' ')[0].match(UVRegex)
+    let parts2 = suffix.split(' ')[1].match(UVRegex)
+    if (!parts || !parts2) {
+      msg.reply("you're missing parameters, please review <#268812893087203338>")
+      return
+    }
+    let id
+    let id2
+    if (parts === null) {
+      id = suffix.split(' ')[0]
+    } else {
+      id = parts[2]
+    }
+    if (parts2 === null) {
+      id2 = suffix.split(' ')[1]
+    } else {
+      id2 = parts2[2]
+    }
+    uv.v1.loginAsOwner().then(c => {
+      c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
+        c.get(`forums/${config.uservoice.forumId}/suggestions/${id2}.json`).then((data2) => {
+          msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
+            color: 0x3498db,
+            author: {
+              name: data.suggestion.creator.name,
+              icon_url: data.suggestion.creator.avatar_url,
+              url: data.suggestion.creator.url
+            },
+            title: data.suggestion.title,
+            description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+            fields: [{
+              name: 'Votes',
+              value: parseInt(data.suggestion.votes) + parseInt(data2.suggestion.votes)
+            }],
+            footer: {
+              text: data.suggestion.category.name
+            }
+          }).then(() => {
+            wait(bot, msg).then((r) => {
+              if (r === null) {
+                msg.reply('you took too long to anwser, the operation has been cancelled.')
+              }
+              if (r === false) {
+                msg.reply('thanks for reconsidering, the operation has been cancelled.')
+              }
+              if (r === true) {
+                cBack({
+                  affected: id
+                })
+                msg.reply('your report has been sent to the admins, thanks!')
+                bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge ${id2} into ${id}? This will result in the following card.`, false, {
+                  color: 0x3498db,
+                  author: {
+                    name: data.suggestion.creator.name,
+                    icon_url: data.suggestion.creator.avatar_url,
+                    url: data.suggestion.creator.url
+                  },
+                  fields: [{
+                    name: 'Votes',
+                    value: parseInt(data.suggestion.votes) + parseInt(data2.suggestion.votes)
+                  }],
+                  title: data.suggestion.title,
+                  description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+                  url: data.suggestion.url,
+                  footer: {
+                    text: data.suggestion.category.name
+                  }
+                }).then(b => {
+                  b.addReaction({
+                    name: 'approve',
+                    id: '302137375092375553'
+                  })
+                  b.addReaction({
+                    name: 'deny',
+                    id: '302137375113609219'
+                  })
+                  state[b.id] = {
+                    type: 'adminReviewMerge',
+                    author: msg.author,
+                    UvId: id,
+                    embed: b.embeds[0]
+                  }
+                })
+              }
+            })
+          })
+        }).catch((e) => {
+          if (e.statusCode === 404) {
+            msg.reply('unable to find a suggestion using your query.')
+          } else {
+            logger.log(bot, {
+              cause: 'delete_search',
+              message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+            })
+            msg.reply('an error occured, please try again later.')
+          }
+        })
+      }).catch((e) => {
+        if (e.statusCode === 404) {
+          msg.reply('unable to find a suggestion using your query.')
+        } else {
+          logger.log(bot, {
+            cause: 'delete_search',
+            message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+          })
+          msg.reply('an error occured, please try again later.')
+        }
+      })
+    })
+  }
+}
+
 commands.registerVote = {
   internal: true,
   fn: function (msg, reaction, bot, uv, user) {
@@ -133,7 +251,8 @@ commands.registerVote = {
       case 'newCard': {
         if (reaction.id === '302137374920671233') {
           checker.getLevel(user.memberOf('268811439588900865'), function (l) {
-            if (l > 0) {
+            if (l > 0 && state[msg.id].reporters.indexOf(user.id) === -1) {
+              state[msg.id].reporters.push(user.id)
               state[msg.id].reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the feed',
@@ -150,7 +269,7 @@ commands.registerVote = {
           })
         } else if (reaction.id === '302138464986595339') {
           getMail(uv, user.id).then(f => {
-            uv.loginAs(f).then(c => {
+            uv.v1.loginAs(f).then(c => {
               c.post(`forums/${config.uservoice.forumId}/suggestions/${state[msg.id].UvId}/votes.json`, {
                 to: 1
               }).then((s) => {
@@ -222,8 +341,51 @@ commands.registerVote = {
         }
         break
       }
+      case 'adminMergeRequest': {
+        if (reaction.id === '302137375113609219') {
+          genlog.log(bot, user, {
+            message: 'Dismissed a report',
+            affected: state[msg.id].UvId,
+          })
+          bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${state[msg.id].UV1} has been dismissed, no action has been taken.`).then(o => {
+            setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+          })
+          delete state[msg.id]
+        } else if (reaction.id === '302137375092375553') {
+          genlog.log(bot, user, {
+            message: 'Approved a report',
+            result: `Card with ID ${state[msg.id].UV1} has been merged into ${state[msg.id].UV2}`
+          })
+          bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${state[msg.id].embed.title} has been approved, the card has been merged.`).then(o => {
+            setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+          })
+          merge(state[msg.id].UV1, state[msg.id].UV2, uv).catch((e) => {
+            logger.log(bot, {
+              cause: 'merge_apply',
+              message: e.statusCode
+            })
+          })
+          delete state[msg.id]
+        }
+        break
+      }
     }
   }
+}
+
+function merge (target, dupe, uv) {
+  return new Promise((resolve, reject) => {
+    uv.v2.loginAsOwner(config.uservoice.secret.trim()).then(client => {
+      require('superagent')
+        .post(`https://${config.uservoice.UVDomain}.uservoice.com/api/v2/admin/suggestions/bulk/merge`)
+        .send(`action.notify_supporters=false&action.reply_to=&action.links.to_suggestion=${dupe}&include_ids=${target}`)
+        .set('Authorization', 'Bearer ' + client.accessToken)
+        .end((err, res) => {
+          if (err || res.statusCode !== 200) return reject(err)
+          else return resolve(res)
+        })
+    })
+  })
 }
 
 function switchIDs (og, bot) {
@@ -241,7 +403,7 @@ function switchIDs (og, bot) {
 }
 
 function deleteFromUV (UVID, uvClient, bot) {
-  uvClient.loginAsOwner().then(i => {
+  uvClient.v1.loginAsOwner().then(i => {
     i.delete(`forums/${config.uservoice.forumId}/suggestions/${UVID}.json`).catch((e) => {
       logger.log(bot, {
         cause: 'card_destroy',
@@ -259,7 +421,7 @@ function deleteFromUV (UVID, uvClient, bot) {
 function getMail (uv, user) {
   return new Promise(function (resolve, reject) {
     if (config.debug === true) return resolve('hello@dougley.com') // no dox pls
-    uv.loginAsOwner().then(i => {
+    uv.v1.loginAsOwner().then(i => {
       i.get('users/search.json', {
         guid: user
       }).then((data) => {
@@ -274,7 +436,7 @@ function getMail (uv, user) {
 }
 
 function wait(bot, msg) {
-  let yn = /^y(es)?$|^n(o)?$/
+  let yn = /^y(es)?$|^n(o)?$/i
   return new Promise((resolve, reject) => {
     bot.Dispatcher.on('MESSAGE_CREATE', function doStuff(c) {
       var time = setTimeout(() => {
@@ -285,7 +447,7 @@ function wait(bot, msg) {
       if (c.message.author.id !== msg.author.id) return
       if (c.message.content.match(yn) === null) return
       else {
-        resolve((c.message.content.match(/^y(es)?/) !== null) ? true : false)
+        resolve((c.message.content.match(/^y(es)?/i) !== null) ? true : false)
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
         clearTimeout(time)
       }
