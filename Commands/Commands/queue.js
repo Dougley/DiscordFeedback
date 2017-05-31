@@ -205,7 +205,7 @@ commands.dupe = {
                     id: '302137375113609219'
                   })
                   state[b.id] = {
-                    type: 'adminReviewMerge',
+                    type: 'adminMergeRequest',
                     author: msg.author,
                     UvId: id,
                     embed: b.embeds[0]
