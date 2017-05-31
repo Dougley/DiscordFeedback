@@ -160,7 +160,7 @@ commands.dupe = {
             description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
             fields: [{
               name: 'Votes',
-              value: parseInt(data.suggestion.votes) + parseInt(data2.suggestion.votes)
+              value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
             }],
             footer: {
               text: data.suggestion.category.name
