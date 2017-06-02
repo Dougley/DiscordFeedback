@@ -111,7 +111,7 @@ commands.delete = {
           logger.log(bot, {
             cause: 'delete_search',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-          })
+          }, e)
           msg.reply('an error occured, please try again later.')
         }
       })
@@ -243,7 +243,7 @@ commands.dupe = {
             logger.log(bot, {
               cause: 'delete_search',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-            })
+            }, e)
             msg.reply('an error occured, please try again later.')
           }
         })
@@ -254,7 +254,7 @@ commands.dupe = {
           logger.log(bot, {
             cause: 'delete_search',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-          })
+          }, e)
           msg.reply('an error occured, please try again later.')
         }
       })
@@ -313,19 +313,19 @@ commands.registerVote = {
                   logger.log(bot, {
                     cause: 'feed_vote',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                  })
+                  }, e)
                 } else {
                   logger.log(bot, {
                     cause: 'feed_vote_apply',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                  })
+                  }, e)
                 }
               })
             }).catch(e => {
               logger.log(bot, {
                 cause: 'login_as',
                 message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-              }).catch(e => {
+              }, e).catch(e => {
                  if (e === 'Not found') {
                   bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
                     setTimeout(() => c.delete(), 5000)
@@ -334,7 +334,7 @@ commands.registerVote = {
                   logger.log(bot, {
                     cause: 'email_search',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                  })
+                  },e)
                 }
               })
             })
@@ -434,13 +434,13 @@ function deleteFromUV (UVID, uvClient, bot) {
       logger.log(bot, {
         cause: 'card_destroy',
         message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-      })
+      }, e)
     })
   }).catch((e) => {
     logger.log(bot, {
       cause: 'card_destroy',
       message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-    })
+    }, e)
   })
 }
 

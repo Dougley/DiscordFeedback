@@ -36,7 +36,7 @@ commands.vote = {
             logger.log(bot, {
               cause: 'vote_apply',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-            })
+            }, e)
             msg.reply('an error occured, please try again later.')
           }
         })
@@ -44,7 +44,7 @@ commands.vote = {
         logger.log(bot, {
           cause: 'login_as',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-        })
+        }, e)
         msg.reply('an error occured, please try again later.')
       })
     }).catch(e => {
@@ -54,7 +54,7 @@ commands.vote = {
         logger.log(bot, {
           cause: 'email_search',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-        })
+        }, e)
         msg.reply('an error occured, please try again later.')
       }
     })
@@ -104,14 +104,14 @@ commands.submit = {
             logger.log(bot, {
               cause: 'submit_feedback',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-            })
+            }, e)
             msg.reply('an error occured, please try again later.')
           })
         }).catch(e => {
           logger.log(bot, {
             cause: 'login_as',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-          })
+          }, e)
           msg.reply('an error occured, please try again later.')
         })
       }).catch(e => {
@@ -121,7 +121,7 @@ commands.submit = {
           logger.log(bot, {
             cause: 'email_search',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-          })
+          }, e)
           msg.reply('an error occured, please try again later.')
         }
       })
@@ -181,7 +181,7 @@ commands.comment = {
             logger.log(bot, {
               cause: 'comment_add',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-            })
+            }, e)
             msg.reply('an error occured, please try again later.')
           }
         })
@@ -189,7 +189,7 @@ commands.comment = {
         logger.log(bot, {
           cause: 'login_as',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-        })
+        }, e)
         msg.reply('an error occured, please try again later.')
       })
     }).catch(e => {
@@ -199,7 +199,7 @@ commands.comment = {
         logger.log(bot, {
           cause: 'email_search',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-        })
+        }, e)
         msg.reply('an error occured, please try again later.')
       }
     })
