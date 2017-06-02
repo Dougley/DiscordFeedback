@@ -389,7 +389,7 @@ commands.registerVote = {
             logger.log(bot, {
               cause: 'merge_apply',
               message: e.message
-            })
+            }, e)
           })
           delete state[msg.id]
         }
