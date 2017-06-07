@@ -126,7 +126,7 @@ commands.dupe = {
       msg.reply("you're missing parameters, please review <#268812893087203338>")
       return
     }
-    if (suffix.split(' ')[0].length < 1 || !suffix.split(' ')[1].length < 1) {
+    if (suffix.split(' ')[0].length < 1 || suffix.split(' ')[1].length < 1) {
       msg.reply("you're missing parameters, please review <#268812893087203338>")
       return
     }
