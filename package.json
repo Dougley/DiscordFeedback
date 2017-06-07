@@ -33,6 +33,7 @@
     "discordie": "^0.10.0",
     "html-entities": "^1.2.1",
     "require-directory": "^2.1.1",
+    "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"
   }
 }
