@@ -16,6 +16,22 @@ commands.ping = {
   }
 }
 
+commands.fetch = {
+  phantom: true,
+  adminOnly: true,
+  modOnly: false,
+  fn: function (bot, msg) {
+    msg.channel.fetchMessages().then(g => {
+      msg.reply(`fetched ${g.messages.length} messages in this channel.`).then(f => {
+        setTimeout(() => {
+          f.delete()
+          msg.delete()
+        }, 2500)
+      })
+    })
+  }
+}
+
 commands.shutdown = {
   phantom: true,
   adminOnly: true,
