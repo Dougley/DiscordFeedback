@@ -79,7 +79,7 @@ commands.delete = {
                 description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
                 url: data.suggestion.url,
                 footer: {
-                  text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
+                  text: (data.suggestion.category !== null) ? data.suggestion.category.name : 'No category'
                 }
               }).then(b => {
                 r.db('DFB').table('queue').insert({
