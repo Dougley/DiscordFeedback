@@ -19,6 +19,7 @@ commands.newCardInit = {
       id: msg.id,
       reports: 0,
       reporters: [],
+      type: 'newCard',
       embed: msg.embeds[0],
       UvId: msg.embeds[0].footer.text.split('ID: ')[1]
     }).run().then(() => {
