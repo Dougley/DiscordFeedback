@@ -35,6 +35,45 @@ commands.newCardInit = {
   }
 }
 
+commands.chatVoteInit = {
+  internal: true,
+  fn: function (msg, id, uv) {
+    uv.v1.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
+      r.db('DFB').table('queue').insert({
+        id: msg.id,
+        type: 'chatVote',
+        reports: 0,
+        channel: msg.channel.id,
+        embed: {
+          color: 0x3498db,
+          author: {
+            name: data.suggestion.creator.name,
+            icon_url: data.suggestion.creator.avatar_url,
+            url: data.suggestion.creator.url
+          },
+          title: data.suggestion.title,
+          description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+          url: data.suggestion.url,
+          footer: {
+            text: (data.suggestion.category !== null) ? data.suggestion.category.name : 'No category'
+          }
+        },
+        reporters: [],
+        UvId: id
+      }).run().then(() => {
+        msg.addReaction({
+          id: '302137374920671233',
+          name: 'report'
+        })
+        msg.addReaction({
+          id: '302138464986595339',
+          name: 'upvote'
+        })
+      }).catch(bugsnag.notify)
+    })
+  }
+}
+
 commands.delete = {
   modOnly: true,
   adminOnly: false,
@@ -277,6 +316,74 @@ commands.registerVote = {
         return
       }
       switch (doc.type) {
+        case 'chatVote': {
+          if (reaction.id === '302137374920671233') {
+            checker.getLevel(user.memberOf('268811439588900865'), function (l) {
+              if (l > 0 && doc.reporters.indexOf(user.id) === -1) {
+                doc.reporters.push(user.id)
+                doc.reports++
+                genlog.log(bot, user, {
+                  message: 'Reported a card as inappropriate in the chat',
+                  affected: doc.UvId,
+                  result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
+                })
+                if (doc.reports === config.discord.reportThreshold) {
+                  bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
+                  doc.type = 'adminReviewDelete'
+                  switchIDs(doc, bot)
+                }
+              }
+            })
+          } else if (reaction.id === '302138464986595339') {
+            getMail(uv, user.id).then(f => {
+              uv.v1.loginAs(f).then(c => {
+                c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
+                  to: 1
+                }).then((s) => {
+                  if (user !== null) {
+                    genlog.log(bot, user, {
+                      message: 'Chat-voted',
+                      affected: doc.UvId
+                    })
+                    bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your vote for ${doc.UvId} has been registered!`).then(c => {
+                      setTimeout(() => c.delete(), 5000)
+                    })
+                  }
+                }).catch(e => {
+                  if (e.statusCode === 404) {
+                    logger.log(bot, {
+                      cause: 'chat_vote',
+                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                    }, e)
+                  } else {
+                    logger.log(bot, {
+                      cause: 'chat_vote_apply',
+                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                    }, e)
+                  }
+                })
+              }).catch(e => {
+                logger.log(bot, {
+                  cause: 'login_as',
+                  message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                }, e).catch(e => {
+                  if (e === 'Not found') {
+                    bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
+                      setTimeout(() => c.delete(), 5000)
+                    })
+                  } else {
+                    logger.log(bot, {
+                      cause: 'email_search',
+                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                    },e)
+                  }
+                })
+              })
+            })
+          }
+          r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+          break
+        }
         case 'newCard': {
           if (reaction.id === '302137374920671233') {
             checker.getLevel(user.memberOf('268811439588900865'), function (l) {

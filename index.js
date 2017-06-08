@@ -11,8 +11,9 @@ const bot = new Discordie({
 })
 
 var bugsnag = require('bugsnag')
-
 bugsnag.register(Config.discord.bugsnag)
+
+const UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
 
 var uvClient = {
   v1: new UserVoice.Client({
@@ -28,6 +29,11 @@ var uvClient = {
 }
 
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
+  if (c.message.channel.id !== Config.discord.feedChannel && c.message.content.match(UVRegex) !== null) {
+    let parts = c.message.content.match(UVRegex)
+    Commands['chatVoteInit'].fn(c.message, parts[2], uvClient)
+    return
+  }
   if (c.message.channel.id === Config.discord.feedChannel && c.message.author.id !== bot.User.id && c.message.author.bot) {
     Commands['newCardInit'].fn(c.message)
     return
@@ -68,11 +74,9 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
 
 bot.Dispatcher.on(Events.MESSAGE_REACTION_ADD, (m) => {
   if (m.user.id !== bot.User.id) {
-    if (m.channel.id === Config.discord.feedChannel || m.channel.name === 'admin-queue') {
-      bot.Channels.get(Config.discord.feedChannel).fetchMessages().then(() => {
-        Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient, m.user)
-      })
-    }
+    bot.Channels.get(Config.discord.feedChannel).fetchMessages().then(() => {
+      Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient, m.user)
+    })
   }
 })
 
