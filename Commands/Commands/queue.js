@@ -79,7 +79,7 @@ commands.delete = {
                 description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
                 url: data.suggestion.url,
                 footer: {
-                  text: data.suggestion.category.name
+                  text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
                 }
               }).then(b => {
                 r.db('DFB').table('queue').insert({
@@ -161,7 +161,7 @@ commands.dupe = {
               value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
             }],
             footer: {
-              text: data2.suggestion.category.name
+              text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
             }
           }).then(() => {
             wait(bot, msg).then((q) => {
