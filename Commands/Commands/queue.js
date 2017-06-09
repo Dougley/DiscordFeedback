@@ -426,10 +426,13 @@ commands.registerVote = {
                   }
                 }).catch(e => {
                   if (e.statusCode === 404) {
-                    logger.log(bot, {
-                      cause: 'feed_vote',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    }, e)
+                    bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer available to be voted on.").then(c => {
+                      setTimeout(() => c.delete(), 2500)
+                    })
+                  } else if (e.statusCode === 422) {
+                    bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer open for voting.").then(c => {
+                      setTimeout(() => c.delete(), 2500)
+                    })
                   } else {
                     logger.log(bot, {
                       cause: 'feed_vote_apply',
