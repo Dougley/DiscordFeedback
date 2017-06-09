@@ -195,7 +195,7 @@ commands.dupe = {
               url: data2.suggestion.creator.url
             },
             title: data2.suggestion.title,
-            description: (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*',
+            description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*' : '*No content*',
             fields: [{
               name: 'Votes',
               value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
