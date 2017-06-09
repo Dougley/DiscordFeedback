@@ -219,13 +219,13 @@ commands.dupe = {
                 bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
                   color: 0x3498db,
                   fields: [{
-                    name: `Merge Candidate: ${(data.suggestion.text.length < 500) ? 'Content' : 'Summary'}`,
-                    value: (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}`,
+                    name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary': 'Content'}`,
+                    value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}` : '*No content*',
                     inline: false
                   },
                   {
-                    name: `Target Card: ${(data2.suggestion.text.length < 500) ? 'Content' : 'Summary'}`,
-                    value: (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}`,
+                    name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary': 'Content'}`,
+                    value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}` : '*No content*',
                     inline: false
                   },
                   {
