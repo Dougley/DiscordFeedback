@@ -98,7 +98,7 @@ commands.delete = {
         msg.reply(`you're about to mark ${id} for **DELETION** because \`${content}\`\n__Are you sure this is correct?__ (yes/no)`).then(() => {
           wait(bot, msg).then((q) => {
             if (q === null) {
-              msg.reply('you took too long to anwser, the operation has been cancelled.')
+              msg.reply('you took too long to answer, the operation has been cancelled.')
             }
             if (q === false) {
               msg.reply('thanks for reconsidering, the operation has been cancelled.')
