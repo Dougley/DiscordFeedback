@@ -271,6 +271,10 @@ commands.dupe = {
                       name: 'deny',
                       id: '302137375113609219'
                     })
+                    b.addReaction({
+                      name: 'reverse',
+                      id: '322646981476614144'
+                    })
                   }).catch(bugsnag.notify)
                 })
               }
@@ -498,6 +502,21 @@ commands.registerVote = {
             merge(doc.UV1, doc.UV2, uv).catch((e) => {
               logger.log(bot, {
                 cause: 'merge_apply',
+                message: e.message
+              }, e)
+            })
+            r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          } else if (reaction.id === '322646981476614144') {
+            genlog.log(bot, user, {
+              message: 'Approved a report',
+              result: `Card with ID ${doc.UV2} has been merged into ${doc.UV1}`
+            })
+            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+            })
+            merge(doc.UV2, doc.UV1, uv).catch((e) => {
+              logger.log(bot, {
+                cause: 'flipmerge_apply',
                 message: e.message
               }, e)
             })
