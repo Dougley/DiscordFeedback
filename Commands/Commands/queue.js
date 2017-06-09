@@ -419,9 +419,10 @@ commands.registerVote = {
                       message: 'Feed-voted',
                       affected: doc.UvId
                     })
-                    bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your vote has been registered.`).then(c => {
-                      setTimeout(() => c.delete(), 5000)
-                    })
+                    msg.addReaction({
+                      id: '322758965547106305',
+                      name: 'f1'
+                    }).then(setTimeout(() => msg.removeReaction({id: '322758965547106305', name: 'f1'}), 2500))
                   }
                 }).catch(e => {
                   if (e.statusCode === 404) {
