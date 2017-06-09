@@ -29,10 +29,9 @@ var uvClient = {
 }
 
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
-  if (c.message.channel.id !== Config.discord.feedChannel && c.message.content.match(UVRegex) !== null) {
+  if (c.message.channel.id !== Config.discord.feedChannel && c.message.content.match(UVRegex) !== null && c.message.content.indexOf(Config.discord.prefix) !== 0) {
     let parts = c.message.content.match(UVRegex)
     Commands['chatVoteInit'].fn(c.message, parts[2], uvClient)
-    return
   }
   if (c.message.channel.id === Config.discord.feedChannel && c.message.author.id !== bot.User.id && c.message.author.bot) {
     Commands['newCardInit'].fn(c.message)

@@ -328,7 +328,9 @@ commands.registerVote = {
                   result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
                 })
                 if (doc.reports === config.discord.reportThreshold) {
-                  bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
+                  bot.Channels.get(doc.channel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`).then(c => {
+                    setTimeout(() => c.delete(), 5000)
+                  })
                   doc.type = 'adminReviewDelete'
                   switchIDs(doc, bot)
                 }
@@ -368,7 +370,7 @@ commands.registerVote = {
                   message: (e.message !== undefined) ? e.message : JSON.stringify(e)
                 }, e).catch(e => {
                   if (e === 'Not found') {
-                    bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
+                    bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
                       setTimeout(() => c.delete(), 5000)
                     })
                   } else {
