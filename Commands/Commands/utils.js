@@ -16,6 +16,14 @@ commands.ping = {
   }
 }
 
+commands.help = {
+  adminOnly: false,
+  modOnly: false, 
+  fn: function (bot, msg) {
+    msg.channel.sendMessage(`Hey ${msg.author.mention}! You can find all the info you need about the bot over at <#268812893087203338>!`)
+  }
+}
+
 commands.fetch = {
   phantom: true,
   adminOnly: true,
