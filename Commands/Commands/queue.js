@@ -333,7 +333,7 @@ commands.registerVote = {
                 })
                 if (doc.reports === config.discord.reportThreshold) {
                   bot.Channels.get(doc.channel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`).then(c => {
-                    setTimeout(() => c.delete(), 5000)
+                    setTimeout(() => c.delete(), 2500)
                   })
                   doc.type = 'adminReviewDelete'
                   switchIDs(doc, bot)
@@ -352,7 +352,7 @@ commands.registerVote = {
                       affected: doc.UvId
                     })
                     bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your vote for ${doc.UvId} has been registered!`).then(c => {
-                      setTimeout(() => c.delete(), 5000)
+                      setTimeout(() => c.delete(), 2500)
                     })
                   }
                 }).catch(e => {
@@ -375,7 +375,7 @@ commands.registerVote = {
                 }, e).catch(e => {
                   if (e === 'Not found') {
                     bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
-                      setTimeout(() => c.delete(), 5000)
+                      setTimeout(() => c.delete(), 2500)
                     })
                   } else {
                     logger.log(bot, {
@@ -444,7 +444,7 @@ commands.registerVote = {
                 }, e).catch(e => {
                   if (e === 'Not found') {
                     bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(c => {
-                      setTimeout(() => c.delete(), 5000)
+                      setTimeout(() => c.delete(), 2500)
                     })
                   } else {
                     logger.log(bot, {
@@ -466,7 +466,7 @@ commands.registerVote = {
               affected: doc.UvId,
             })
             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been dismissed, no action has been taken.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 2500)
             })
           } else if (reaction.id === '302137375092375553') {
             genlog.log(bot, user, {
@@ -476,7 +476,7 @@ commands.registerVote = {
             })
 
             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been deleted from Uservoice.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 2500)
             })
             deleteFromUV(doc.UvId, uv, bot)
             r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
@@ -490,7 +490,7 @@ commands.registerVote = {
               affected: doc.UvId,
             })
             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${doc.UV1} has been dismissed, no action has been taken.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 2500)
             })
           } else if (reaction.id === '302137375092375553') {
             genlog.log(bot, user, {
@@ -498,7 +498,7 @@ commands.registerVote = {
               result: `Card with ID ${doc.UV1} has been merged into ${doc.UV2}`
             })
             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 2500)
             })
             merge(doc.UV1, doc.UV2, uv).catch((e) => {
               logger.log(bot, {
@@ -513,7 +513,7 @@ commands.registerVote = {
               result: `Card with ID ${doc.UV2} has been merged into ${doc.UV1}`
             })
             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 5000)
+              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), 2500)
             })
             merge(doc.UV2, doc.UV1, uv).catch((e) => {
               logger.log(bot, {
