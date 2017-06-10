@@ -206,7 +206,7 @@ commands.dupe = {
           }).then(() => {
             wait(bot, msg).then((q) => {
               if (q === null) {
-                msg.reply('you took too long to anwser, the operation has been cancelled.')
+                msg.reply('you took too long to answer, the operation has been cancelled.')
               }
               if (q === false) {
                 msg.reply('thanks for reconsidering, the operation has been cancelled.')
@@ -404,6 +404,12 @@ commands.registerVote = {
                 if (doc.reports === config.discord.reportThreshold) {
                   bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
                   doc.type = 'adminReviewDelete'
+                  var reportsArr = msg.fetchReactions({id: '322802459799977986', name: 'report'}, bot.User)
+                  for (let reaction in reportsArr) msg.removeReaction({id: '322802459799977986', name: 'report'}, reaction.id)
+                  msg.addReaction({
+                    name: 'reported',
+                    id: '323058409203171328'
+                  })
                   switchIDs(doc, bot)
                 }
               }
