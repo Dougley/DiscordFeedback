@@ -339,7 +339,6 @@ commands.registerVote = {
                     name: 'reported',
                     id: '323058409203171328'
                   })
-                  })
                   doc.type = 'adminReviewDelete'
                   switchIDs(doc, bot)
                 }
