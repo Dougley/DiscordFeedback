@@ -147,7 +147,7 @@ commands.comment = {
         } else {
           id = parts[2]
         }
-        if (content.startsWith("|") content = content.slice(1).trim()
+        if (content.startsWith("|")) content = content.slice(1).trim()
         c.post(`forums/${config.uservoice.forumId}/suggestions/${id}/comments.json`, {
           comment: {
             text: content
