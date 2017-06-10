@@ -428,7 +428,7 @@ commands.registerVote = {
                     msg.addReaction({
                       id: '296752137935912960',
                       name: 'f1'
-                    }).then(setTimeout(() => msg.removeReaction({id: '322758965547106305', name: 'f1'}), 2500))
+                    }).then(setTimeout(() => msg.removeReaction({id: '296752137935912960', name: 'f1'}), 2500))
                   }
                 }).catch(e => {
                   if (e.statusCode === 404) {
