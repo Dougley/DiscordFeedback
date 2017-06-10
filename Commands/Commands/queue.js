@@ -87,6 +87,7 @@ commands.delete = {
       msg.reply('you need to provide a reason.')
       return
     }
+    if (content.startsWith("|")) content = content.slice(1).trim()
     let id
     if (parts === null) {
       id = suffix.split(' ')[0]
