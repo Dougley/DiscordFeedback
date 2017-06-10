@@ -426,7 +426,7 @@ commands.registerVote = {
                       affected: doc.UvId
                     })
                     msg.addReaction({
-                      id: '322758965547106305',
+                      id: '296752137935912960',
                       name: 'f1'
                     }).then(setTimeout(() => msg.removeReaction({id: '322758965547106305', name: 'f1'}), 2500))
                   }
