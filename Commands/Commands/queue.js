@@ -408,7 +408,6 @@ commands.registerVote = {
                   result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
                 })
                 if (doc.reports === config.discord.reportThreshold) {
-                  bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
                   doc.type = 'adminReviewDelete'
                   var reportsArr = msg.fetchReactions({id: '302137374920671233', name: 'report'}, bot.User)
                   for (let reaction in reportsArr) msg.removeReaction({id: '302137374920671233', name: 'report'}, reaction.id)
