@@ -73,9 +73,12 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
 
 bot.Dispatcher.on(Events.MESSAGE_REACTION_ADD, (m) => {
   if (m.user.id !== bot.User.id) {
-    bot.Channels.get(Config.discord.feedChannel).fetchMessages().then(() => {
-      Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient, m.user)
-    })
+    if (m.message === null) {
+      bot.Channels.get(m.data.channel_id).fetchMessages().then(() => {
+        m.message = bot.Messages.get(m.data.message_id)
+      })
+    }
+    Commands['registerVote'].fn(m.message, m.emoji, bot, uvClient, m.user)
   }
 })
 
