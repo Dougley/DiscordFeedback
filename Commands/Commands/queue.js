@@ -332,8 +332,12 @@ commands.registerVote = {
                   result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
                 })
                 if (doc.reports === config.discord.reportThreshold) {
-                  bot.Channels.get(doc.channel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`).then(c => {
-                    setTimeout(() => c.delete(), 2500)
+                  var reportsArr = msg.fetchReactions({id: '302137374920671233', name: 'report'}, bot.User)
+                  for (let reaction in reportsArr) msg.removeReaction({id: '302137374920671233', name: 'report'}, reaction.id)
+                  msg.addReaction({
+                    name: 'reported',
+                    id: '323058409203171328'
+                  })
                   })
                   doc.type = 'adminReviewDelete'
                   switchIDs(doc, bot)
@@ -351,9 +355,10 @@ commands.registerVote = {
                       message: 'Chat-voted',
                       affected: doc.UvId
                     })
-                    bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your vote for ${doc.UvId} has been registered!`).then(c => {
-                      setTimeout(() => c.delete(), 2500)
-                    })
+                    msg.addReaction({
+                      id: '296752137935912960',
+                      name: 'f1'
+                    }).then(setTimeout(() => msg.removeReaction({id: '296752137935912960', name: 'f1'}), 2500))
                   }
                 }).catch(e => {
                   if (e.statusCode === 404) {
@@ -404,8 +409,8 @@ commands.registerVote = {
                 if (doc.reports === config.discord.reportThreshold) {
                   bot.Channels.get(config.discord.feedChannel).sendMessage(`Feedback with ID ${doc.UvId} (${msg.embeds[0].title}) has been sent off for admin review.`)
                   doc.type = 'adminReviewDelete'
-                  var reportsArr = msg.fetchReactions({id: '322802459799977986', name: 'report'}, bot.User)
-                  for (let reaction in reportsArr) msg.removeReaction({id: '322802459799977986', name: 'report'}, reaction.id)
+                  var reportsArr = msg.fetchReactions({id: '302137374920671233', name: 'report'}, bot.User)
+                  for (let reaction in reportsArr) msg.removeReaction({id: '302137374920671233', name: 'report'}, reaction.id)
                   msg.addReaction({
                     name: 'reported',
                     id: '323058409203171328'
