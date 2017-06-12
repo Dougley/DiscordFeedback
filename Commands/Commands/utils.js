@@ -12,7 +12,9 @@ commands.ping = {
   adminOnly: true,
   modOnly: false,
   fn: function (bot, msg) {
-    msg.channel.sendMessage('Pong!')
+    msg.channel.sendMessage('Pong!').then(successmsg => {
+      setTimeout(() => successmsg.delete(), config.timeouts.messageDelete)
+    })
   }
 }
 
@@ -20,7 +22,9 @@ commands.help = {
   adminOnly: false,
   modOnly: false, 
   fn: function (bot, msg) {
-    msg.channel.sendMessage(`Hey ${msg.author.mention}! You can find all the info you need about the bot over at <#268812893087203338>!`)
+    msg.channel.sendMessage(`Hey ${msg.author.mention}! You can find all the info you need about the bot over at <#268812893087203338>!`).then(successmsg => {
+      setTimeout(() => successmsg.delete(), config.timeouts.messageDelete)
+    })
   }
 }
 
@@ -34,7 +38,7 @@ commands.fetch = {
         setTimeout(() => {
           f.delete()
           msg.delete()
-        }, 2500)
+        }, config.timeouts.messageDelete)
       })
     })
   }

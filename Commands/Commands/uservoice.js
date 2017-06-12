@@ -31,13 +31,17 @@ commands.vote = {
           })
         }).catch(e => {
           if (e.statusCode === 404) {
-            msg.reply('unable to find a suggestion using your query.')
+            msg.reply('unable to find a suggestion using your query.').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            })
           } else {
             logger.log(bot, {
               cause: 'vote_apply',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
-            msg.reply('an error occured, please try again later.')
+            msg.reply('an error occured, please try again later.').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            })
           }
         })
       }).catch(e => {
@@ -45,17 +49,23 @@ commands.vote = {
           cause: 'login_as',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
-        msg.reply('an error occured, please try again later.')
+        msg.reply('an error occured, please try again later.').then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       })
     }).catch(e => {
       if (e === 'Not found') {
-        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.")
+        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       } else {
         logger.log(bot, {
           cause: 'email_search',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
-        msg.reply('an error occured, please try again later.')
+        msg.reply('an error occured, please try again later.').then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       }
     })
   }
@@ -70,7 +80,9 @@ commands.submit = {
     if (IDs.indexOf(msg.channel.id) === -1) return
     let content = suffix.split(' | ')
     if (content.length !== 2) {
-      msg.reply('This command only takes 2 arguments')
+      msg.reply('This command only takes 2 arguments').then(errmsg => {
+        setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+      })
     } else {
       msg.channel.sendTyping()
       getMail(uvClient, msg.author.id).then(email => {
@@ -96,6 +108,8 @@ commands.submit = {
               footer: {
                 text: entities.decode(data.suggestion.category.name)
               }
+            }).then(successmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete)
             })
             cBack({
               result: data.suggestion.url
@@ -105,24 +119,32 @@ commands.submit = {
               cause: 'submit_feedback',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
-            msg.reply('an error occured, please try again later.')
+            msg.reply('an error occured, please try again later.').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            })
           })
         }).catch(e => {
           logger.log(bot, {
             cause: 'login_as',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
-          msg.reply('an error occured, please try again later.')
+          msg.reply('an error occured, please try again later.').then(errmsg => {
+            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+          })
         })
       }).catch(e => {
         if (e === 'Not found') {
-          msg.reply("I was unable to find your details, make sure you've logged into the website at least once.")
+          msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+          })
         } else {
           logger.log(bot, {
             cause: 'email_search',
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
-          msg.reply('an error occured, please try again later.')
+          msg.reply('an error occured, please try again later.').then(errmsg => {
+            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+          })
         }
       })
     }
@@ -170,6 +192,8 @@ commands.comment = {
                 inline: false
               }
             ]
+          }).then(successmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete)
           })
           cBack({
             affected: id,
@@ -177,13 +201,17 @@ commands.comment = {
           })
         }).catch(e => {
           if (e.statusCode === 404) {
-            msg.reply('unable to find a suggestion using your query.')
+            msg.reply('unable to find a suggestion using your query.').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            })
           } else {
             logger.log(bot, {
               cause: 'comment_add',
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
-            msg.reply('an error occured, please try again later.')
+            msg.reply('an error occured, please try again later.').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            })
           }
         })
       }).catch(e => {
@@ -191,17 +219,23 @@ commands.comment = {
           cause: 'login_as',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
-        msg.reply('an error occured, please try again later.')
+        msg.reply('an error occured, please try again later.').then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       })
     }).catch(e => {
       if (e === 'Not found') {
-        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.")
+        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       } else {
         logger.log(bot, {
           cause: 'email_search',
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
-        msg.reply('an error occured, please try again later.')
+        msg.reply('an error occured, please try again later.').then(errmsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        })
       }
     })
   }
