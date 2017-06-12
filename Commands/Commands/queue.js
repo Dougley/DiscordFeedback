@@ -177,13 +177,13 @@ commands.dupe = {
     msg.channel.sendTyping()
     if (!suffix) {
       msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
-        setTimeout(() =>bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        setTimeout(() =>bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
       })
       return
     }
     if (suffix.split(' ')[0].length < 1 || suffix.split(' ')[1].length < 1) {
       msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
-        setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+        setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
       })
       return
     }
@@ -224,12 +224,12 @@ commands.dupe = {
             wait(bot, msg).then((q) => {
               if (q === null) {
                 msg.reply('you took too long to answer, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete)
+                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
                 })
               }
               if (q === false) {
                 msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete)
+                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
                 })
               }
               if (q === true) {
@@ -237,7 +237,7 @@ commands.dupe = {
                   affected: id
                 })
                 msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete)
+                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
                 })
                 bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
                   color: 0x3498db,
@@ -306,7 +306,7 @@ commands.dupe = {
         }).catch((e) => {
           if (e.statusCode === 404) {
             msg.reply('unable to find a suggestion using your second query.').then(errmsg => {
-               setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+               setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
             })
           } else {
             logger.log(bot, {
@@ -314,14 +314,14 @@ commands.dupe = {
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
             msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
             })
           }
         })
       }).catch((e) => {
         if (e.statusCode === 404) {
           msg.reply('unable to find a suggestion using your first query.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
           })
         } else {
           logger.log(bot, {
@@ -329,7 +329,7 @@ commands.dupe = {
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
           msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
           })
         }
       })
@@ -410,7 +410,7 @@ commands.registerVote = {
                 }, e).catch(e => {
                   if (e === 'Not found') {
                     bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
                     })
                   } else {
                     logger.log(bot, {
@@ -467,11 +467,11 @@ commands.registerVote = {
                 }).catch(e => {
                   if (e.statusCode === 404) {
                     bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer available to be voted on.").then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
                     })
                   } else if (e.statusCode === 422) {
                     bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer open for voting.").then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
                     })
                   } else {
                     logger.log(bot, {
@@ -487,7 +487,7 @@ commands.registerVote = {
                 }, e).catch(e => {
                   if (e === 'Not found') {
                     bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete)
+                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
                     })
                   } else {
                     logger.log(bot, {
