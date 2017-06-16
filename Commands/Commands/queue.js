@@ -1,5 +1,4 @@
 var commands = []
-var state = {}
 const Dash = require('rethinkdbdash')
 const r = new Dash()
 var checker = require('../../Utils/access_checker')
@@ -77,7 +76,7 @@ commands.chatVoteInit = {
 commands.delete = {
   modOnly: true,
   adminOnly: false,
-  fn: function(bot, msg, suffix, uv, cBack) {
+  fn: function (bot, msg, suffix, uv, cBack) {
     msg.channel.sendTyping()
     let parts = suffix.split(' ')[0].match(UVRegex)
     let part = suffix.split(' ')
@@ -85,11 +84,11 @@ commands.delete = {
     let content = part.join(' ')
     if (content.length === 0) {
       msg.reply('you need to provide a reason.').then(errmsg => {
-      setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
-    })
+        setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
+      })
       return
     }
-    if (content.startsWith("|")) content = content.slice(1).trim()
+    if (content.startsWith('|')) content = content.slice(1).trim()
     let id
     if (parts === null) {
       id = suffix.split(' ')[0]
@@ -102,12 +101,12 @@ commands.delete = {
           wait(bot, msg).then((q) => {
             if (q === null) {
               msg.reply('you took too long to answer, the operation has been cancelled.').then(successmsg => {
-                setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id, confirmq.id]), config.timeouts.messageDelete)
-            })
+                setTimeout(() => bot.Messages.deleteMessages([msg, successmsg, confirmq]), config.timeouts.messageDelete)
+              })
             }
             if (q === false) {
               msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
-                setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id, confirmq.id]), config.timeouts.messageDelete)
+                setTimeout(() => bot.Messages.deleteMessages([msg, successmsg, confirmq]), config.timeouts.messageDelete)
               })
             }
             if (q === true) {
@@ -115,7 +114,7 @@ commands.delete = {
                 affected: id
               })
               msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
-                setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id, confirmq.id]), config.timeouts.messageDelete)
+                setTimeout(() => bot.Messages.deleteMessages([msg, successmsg, confirmq]), config.timeouts.messageDelete)
               })
               bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`The following card has been marked for ***deletion*** by ${msg.author.username}#${msg.author.discriminator} for the following reason:\n${content}\n\nPlease review this report.`, false, {
                 color: 0x3498db,
@@ -154,7 +153,7 @@ commands.delete = {
       }).catch((e) => {
         if (e.statusCode === 404) {
           msg.reply('unable to find a suggestion using your query.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id]), config.timeouts.messageDelete)
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.messageDelete)
           })
         } else {
           logger.log(bot, {
@@ -162,7 +161,7 @@ commands.delete = {
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
           msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         }
       })
@@ -173,17 +172,17 @@ commands.delete = {
 commands.dupe = {
   modOnly: true,
   adminOnly: false,
-  fn: function(bot, msg, suffix, uv, cBack) {
+  fn: function (bot, msg, suffix, uv, cBack) {
     msg.channel.sendTyping()
     if (!suffix) {
       msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
-        setTimeout(() =>bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
       })
       return
     }
     if (suffix.split(' ')[0].length < 1 || suffix.split(' ')[1].length < 1) {
       msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
-        setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
       })
       return
     }
@@ -224,12 +223,12 @@ commands.dupe = {
             wait(bot, msg).then((q) => {
               if (q === null) {
                 msg.reply('you took too long to answer, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
+                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg], config.timeouts.messageDelete))
                 })
               }
               if (q === false) {
                 msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
+                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg], config.timeouts.messageDelete))
                 })
               }
               if (q === true) {
@@ -237,17 +236,17 @@ commands.dupe = {
                   affected: id
                 })
                 msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
+                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg], config.timeouts.messageDelete))
                 })
                 bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
                   color: 0x3498db,
                   fields: [{
-                    name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary': 'Content'}`,
+                    name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
                     value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}` : '*No content*',
                     inline: false
                   },
                   {
-                    name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary': 'Content'}`,
+                    name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
                     value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}` : '*No content*',
                     inline: false
                   },
@@ -269,8 +268,9 @@ commands.dupe = {
                   {
                     name: 'Target Card: Date of creation',
                     value: data2.suggestion.created_at,
-                    inline: true                  
-                  }],
+                    inline: true
+                  }
+                  ],
                   title: data2.suggestion.title,
                   description: `These suggestions will be merged.\n[Target Card](${data2.suggestion.url})\n[Merge Candidate](${data.suggestion.url})`,
                   footer: {
@@ -306,7 +306,7 @@ commands.dupe = {
         }).catch((e) => {
           if (e.statusCode === 404) {
             msg.reply('unable to find a suggestion using your second query.').then(errmsg => {
-               setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           } else {
             logger.log(bot, {
@@ -314,14 +314,14 @@ commands.dupe = {
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
             msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           }
         })
       }).catch((e) => {
         if (e.statusCode === 404) {
           msg.reply('unable to find a suggestion using your first query.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         } else {
           logger.log(bot, {
@@ -329,7 +329,7 @@ commands.dupe = {
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
           msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         }
       })
@@ -351,223 +351,249 @@ commands.registerVote = {
         return
       }
       switch (doc.type) {
-        case 'chatVote': {
-          if (reaction.id === '302137374920671233') {
-            checker.getLevel(user.memberOf('268811439588900865'), function (l) {
-              if (l > 0 && doc.reporters.indexOf(user.id) === -1) {
-                doc.reporters.push(user.id)
-                doc.reports++
-                genlog.log(bot, user, {
-                  message: 'Reported a card as inappropriate in the chat',
-                  affected: doc.UvId,
-                  result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
-                })
-                if (doc.reports === config.discord.reportThreshold) {
-                  var reportsArr = msg.fetchReactions({id: '302137374920671233', name: 'report'}, bot.User)
-                  for (let reaction in reportsArr) msg.removeReaction({id: '302137374920671233', name: 'report'}, reaction.id)
-                  msg.addReaction({
-                    name: 'reported',
-                    id: '323058409203171328'
+        case 'chatVote':
+          {
+            if (reaction.id === '302137374920671233') {
+              checker.getLevel(user.memberOf('268811439588900865'), function (l) {
+                if (l > 0 && doc.reporters.indexOf(user.id) === -1) {
+                  doc.reporters.push(user.id)
+                  doc.reports++
+                  genlog.log(bot, user, {
+                    message: 'Reported a card as inappropriate in the chat',
+                    affected: doc.UvId,
+                    result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
                   })
-                  doc.type = 'adminReviewDelete'
-                  switchIDs(doc, bot)
-                }
-              }
-            })
-          } else if (reaction.id === '302138464986595339') {
-            getMail(uv, user.id).then(f => {
-              uv.v1.loginAs(f).then(c => {
-                c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
-                  to: 1
-                }).then((s) => {
-                  if (user !== null) {
-                    genlog.log(bot, user, {
-                      message: 'Chat-voted',
-                      affected: doc.UvId
-                    })
+                  if (doc.reports === config.discord.reportThreshold) {
+                    var reportsArr = msg.fetchReactions({
+                      id: '302137374920671233',
+                      name: 'report'
+                    }, bot.User)
+                    for (let reaction in reportsArr) {
+                      msg.removeReaction({
+                        id: '302137374920671233',
+                        name: 'report'
+                      }, reaction.id)
+                    }
                     msg.addReaction({
-                      id: '296752137935912960',
-                      name: 'f1'
-                    }).then(setTimeout(() => msg.removeReaction({id: '296752137935912960', name: 'f1'}), 2500))
-                  }
-                }).catch(e => {
-                  if (e.statusCode === 404) {
-                    logger.log(bot, {
-                      cause: 'chat_vote',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    }, e)
-                  } else {
-                    logger.log(bot, {
-                      cause: 'chat_vote_apply',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    }, e)
-                  }
-                })
-              }).catch(e => {
-                logger.log(bot, {
-                  cause: 'login_as',
-                  message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                }, e).catch(e => {
-                  if (e === 'Not found') {
-                    bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+                      name: 'reported',
+                      id: '323058409203171328'
                     })
-                  } else {
-                    logger.log(bot, {
-                      cause: 'email_search',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    },e)
+                    doc.type = 'adminReviewDelete'
+                    switchIDs(doc, bot)
                   }
+                }
+              })
+            } else if (reaction.id === '302138464986595339') {
+              getMail(uv, user.id).then(f => {
+                uv.v1.loginAs(f).then(c => {
+                  c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
+                    to: 1
+                  }).then((s) => {
+                    if (user !== null) {
+                      genlog.log(bot, user, {
+                        message: 'Chat-voted',
+                        affected: doc.UvId
+                      })
+                      msg.addReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }).then(setTimeout(() => msg.removeReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }), 2500))
+                    }
+                  }).catch(e => {
+                    if (e.statusCode === 404) {
+                      logger.log(bot, {
+                        cause: 'chat_vote',
+                        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                      }, e)
+                    } else {
+                      logger.log(bot, {
+                        cause: 'chat_vote_apply',
+                        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                      }, e)
+                    }
+                  })
+                }).catch(e => {
+                  logger.log(bot, {
+                    cause: 'login_as',
+                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                  }, e).catch(e => {
+                    if (e === 'Not found') {
+                      bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                      })
+                    } else {
+                      logger.log(bot, {
+                        cause: 'email_search',
+                        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                      }, e)
+                    }
+                  })
                 })
               })
-            })
+            }
+            r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+            break
           }
-          r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
-          break
-        }
-        case 'newCard': {
-          if (reaction.id === '302137374920671233') {
-            checker.getLevel(user.memberOf('268811439588900865'), function (l) {
-              if (l > 0 && doc.reporters.indexOf(user.id) === -1) {
-                doc.reporters.push(user.id)
-                doc.reports++
-                genlog.log(bot, user, {
-                  message: 'Reported a card as inappropriate in the feed',
-                  affected: doc.UvId,
-                  result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins': undefined
-                })
-                if (doc.reports === config.discord.reportThreshold) {
-                  doc.type = 'adminReviewDelete'
-                  var reportsArr = msg.fetchReactions({id: '302137374920671233', name: 'report'}, bot.User)
-                  for (let reaction in reportsArr) msg.removeReaction({id: '302137374920671233', name: 'report'}, reaction.id)
-                  msg.addReaction({
-                    name: 'reported',
-                    id: '323058409203171328'
+        case 'newCard':
+          {
+            if (reaction.id === '302137374920671233') {
+              checker.getLevel(user.memberOf('268811439588900865'), function (l) {
+                if (l > 0 && doc.reporters.indexOf(user.id) === -1) {
+                  doc.reporters.push(user.id)
+                  doc.reports++
+                  genlog.log(bot, user, {
+                    message: 'Reported a card as inappropriate in the feed',
+                    affected: doc.UvId,
+                    result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
                   })
-                  switchIDs(doc, bot)
-                }
-              }
-            })
-          } else if (reaction.id === '302138464986595339') {
-            getMail(uv, user.id).then(f => {
-              uv.v1.loginAs(f).then(c => {
-                c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
-                  to: 1
-                }).then((s) => {
-                  if (user !== null) {
-                    genlog.log(bot, user, {
-                      message: 'Feed-voted',
-                      affected: doc.UvId
-                    })
+                  if (doc.reports === config.discord.reportThreshold) {
+                    doc.type = 'adminReviewDelete'
+                    var reportsArr = msg.fetchReactions({
+                      id: '302137374920671233',
+                      name: 'report'
+                    }, bot.User)
+                    for (let reaction in reportsArr) {
+                      msg.removeReaction({
+                        id: '302137374920671233',
+                        name: 'report'
+                      }, reaction.id)
+                    }
                     msg.addReaction({
-                      id: '296752137935912960',
-                      name: 'f1'
-                    }).then(setTimeout(() => msg.removeReaction({id: '296752137935912960', name: 'f1'}), 2500))
+                      name: 'reported',
+                      id: '323058409203171328'
+                    })
+                    switchIDs(doc, bot)
                   }
+                }
+              })
+            } else if (reaction.id === '302138464986595339') {
+              getMail(uv, user.id).then(f => {
+                uv.v1.loginAs(f).then(c => {
+                  c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
+                    to: 1
+                  }).then((s) => {
+                    if (user !== null) {
+                      genlog.log(bot, user, {
+                        message: 'Feed-voted',
+                        affected: doc.UvId
+                      })
+                      msg.addReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }).then(setTimeout(() => msg.removeReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }), 2500))
+                    }
+                  }).catch(e => {
+                    if (e.statusCode === 404) {
+                      bot.Channels.get(config.discord.feedChannel).sendMessage('The suggestion is no longer available to be voted on.').then(errmsg => {
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                      })
+                    } else if (e.statusCode === 422) {
+                      bot.Channels.get(config.discord.feedChannel).sendMessage('The suggestion is no longer open for voting.').then(errmsg => {
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                      })
+                    } else {
+                      logger.log(bot, {
+                        cause: 'feed_vote_apply',
+                        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                      }, e)
+                    }
+                  })
                 }).catch(e => {
-                  if (e.statusCode === 404) {
-                    bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer available to be voted on.").then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
-                    })
-                  } else if (e.statusCode === 422) {
-                    bot.Channels.get(config.discord.feedChannel).sendMessage("The suggestion is no longer open for voting.").then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
-                    })
-                  } else {
-                    logger.log(bot, {
-                      cause: 'feed_vote_apply',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    }, e)
-                  }
-                })
-              }).catch(e => {
-                logger.log(bot, {
-                  cause: 'login_as',
-                  message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                }, e).catch(e => {
-                  if (e === 'Not found') {
-                    bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                      setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
-                    })
-                  } else {
-                    logger.log(bot, {
-                      cause: 'email_search',
-                      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                    },e)
-                  }
+                  logger.log(bot, {
+                    cause: 'login_as',
+                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                  }, e).catch(e => {
+                    if (e === 'Not found') {
+                      bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                      })
+                    } else {
+                      logger.log(bot, {
+                        cause: 'email_search',
+                        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                      }, e)
+                    }
+                  })
                 })
               })
-            })
+            }
+            r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+            break
           }
-          r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
-          break
-        }
-        case 'adminReviewDelete': {
-          if (reaction.id === '302137375113609219') {
-            genlog.log(bot, user, {
-              message: 'Dismissed a report',
-              affected: doc.UvId,
-            })
-            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been dismissed, no action has been taken.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-            })
-          } else if (reaction.id === '302137375092375553') {
-            genlog.log(bot, user, {
-              message: 'Approved a report',
-              affected: doc.UvId,
-              result: `Card with ID ${doc.UvId} has been deleted`
-            })
+        case 'adminReviewDelete':
+          {
+            if (reaction.id === '302137375113609219') {
+              genlog.log(bot, user, {
+                message: 'Dismissed a report',
+                affected: doc.UvId
+              })
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been dismissed, no action has been taken.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o, msg]), config.timeouts.messageDelete)
+              })
+            } else if (reaction.id === '302137375092375553') {
+              genlog.log(bot, user, {
+                message: 'Approved a report',
+                affected: doc.UvId,
+                result: `Card with ID ${doc.UvId} has been deleted`
+              })
 
-            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been deleted from Uservoice.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-            })
-            deleteFromUV(doc.UvId, uv, bot)
-            r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been deleted from Uservoice.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+              })
+              deleteFromUV(doc.UvId, uv, bot)
+              r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+            }
+            break
           }
-          break
-        }
-        case 'adminMergeRequest': {
-          if (reaction.id === '302137375113609219') {
-            genlog.log(bot, user, {
-              message: 'Dismissed a report',
-              affected: doc.UvId,
-            })
-            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${doc.UV1} has been dismissed, no action has been taken.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-            })
-          } else if (reaction.id === '302137375092375553') {
-            genlog.log(bot, user, {
-              message: 'Approved a report',
-              result: `Card with ID ${doc.UV1} has been merged into ${doc.UV2}`
-            })
-            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-            })
-            merge(doc.UV1, doc.UV2, uv).catch((e) => {
-              logger.log(bot, {
-                cause: 'merge_apply',
-                message: e.message
-              }, e)
-            })
-            r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
-          } else if (reaction.id === '322646981476614144') {
-            genlog.log(bot, user, {
-              message: 'Approved a report',
-              result: `Card with ID ${doc.UV2} has been merged into ${doc.UV1}`
-            })
-            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
-              setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-            })
-            merge(doc.UV2, doc.UV1, uv).catch((e) => {
-              logger.log(bot, {
-                cause: 'flipmerge_apply',
-                message: e.message
-              }, e)
-            })
-            r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+        case 'adminMergeRequest':
+          {
+            if (reaction.id === '302137375113609219') {
+              genlog.log(bot, user, {
+                message: 'Dismissed a report',
+                affected: doc.UvId
+              })
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${doc.UV1} has been dismissed, no action has been taken.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+              })
+            } else if (reaction.id === '302137375092375553') {
+              genlog.log(bot, user, {
+                message: 'Approved a report',
+                result: `Card with ID ${doc.UV1} has been merged into ${doc.UV2}`
+              })
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+              })
+              merge(doc.UV1, doc.UV2, uv).catch((e) => {
+                logger.log(bot, {
+                  cause: 'merge_apply',
+                  message: e.message
+                }, e)
+              })
+              r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+            } else if (reaction.id === '322646981476614144') {
+              genlog.log(bot, user, {
+                message: 'Approved a report',
+                result: `Card with ID ${doc.UV2} has been merged into ${doc.UV1}`
+              })
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+              })
+              merge(doc.UV2, doc.UV1, uv).catch((e) => {
+                logger.log(bot, {
+                  cause: 'flipmerge_apply',
+                  message: e.message
+                }, e)
+              })
+              r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+            }
+            break
           }
-          break
-        }
       }
     }).catch(bugsnag.notify)
   }
@@ -637,10 +663,10 @@ function getMail (uv, user) {
   })
 }
 
-function wait(bot, msg) {
+function wait (bot, msg) {
   let yn = /^y(es)?$|^n(o)?$/i
   return new Promise((resolve, reject) => {
-    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff(c) {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
       var time = setTimeout(() => {
         resolve(null)
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
@@ -649,7 +675,7 @@ function wait(bot, msg) {
       if (c.message.author.id !== msg.author.id) return
       if (c.message.content.match(yn) === null) return
       else {
-        resolve((c.message.content.match(/^y(es)?/i) !== null) ? true : false)
+        resolve((c.message.content.match(/^y(es)?/i) !== null))
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
         clearTimeout(time)
       }

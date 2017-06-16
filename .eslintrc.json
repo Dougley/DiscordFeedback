@@ -1,7 +1,7 @@
 {
     "extends": "standard",
     "installedESLint": true,
-    "indent": ["error", 4],
+    "indent": ["error", 2],
     "plugins": [
         "standard",
         "promise"
