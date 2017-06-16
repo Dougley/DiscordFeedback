@@ -6,7 +6,7 @@ var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
 var UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
 
-entities = new Entities()
+const entities = new Entities()
 
 commands.vote = {
   adminOnly: false,
@@ -32,7 +32,7 @@ commands.vote = {
         }).catch(e => {
           if (e.statusCode === 404) {
             msg.reply('unable to find a suggestion using your query.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           } else {
             logger.log(bot, {
@@ -40,7 +40,7 @@ commands.vote = {
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
             msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           }
         })
@@ -50,13 +50,13 @@ commands.vote = {
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
         msg.reply('an error occured, please try again later.').then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       })
     }).catch(e => {
       if (e === 'Not found') {
         msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       } else {
         logger.log(bot, {
@@ -64,7 +64,7 @@ commands.vote = {
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
         msg.reply('an error occured, please try again later.').then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       }
     })
@@ -81,7 +81,7 @@ commands.submit = {
     let content = suffix.split(' | ')
     if (content.length !== 2) {
       msg.reply('This command only takes 2 arguments').then(errmsg => {
-        setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
       })
     } else {
       msg.channel.sendTyping()
@@ -109,7 +109,7 @@ commands.submit = {
                 text: entities.decode(data.suggestion.category.name)
               }
             }).then(successmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, successmsg], config.timeouts.messageDelete))
             })
             cBack({
               result: data.suggestion.url
@@ -120,7 +120,7 @@ commands.submit = {
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
             msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           })
         }).catch(e => {
@@ -129,13 +129,13 @@ commands.submit = {
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
           msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         })
       }).catch(e => {
         if (e === 'Not found') {
           msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         } else {
           logger.log(bot, {
@@ -143,7 +143,7 @@ commands.submit = {
             message: (e.message !== undefined) ? e.message : JSON.stringify(e)
           }, e)
           msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
           })
         }
       })
@@ -169,7 +169,7 @@ commands.comment = {
         } else {
           id = parts[2]
         }
-        if (content.startsWith("|")) content = content.slice(1).trim()
+        if (content.startsWith('|')) content = content.slice(1).trim()
         c.post(`forums/${config.uservoice.forumId}/suggestions/${id}/comments.json`, {
           comment: {
             text: content
@@ -193,7 +193,7 @@ commands.comment = {
               }
             ]
           }).then(successmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, successmsg.id], config.timeouts.messageDelete))
+            setTimeout(() => bot.Messages.deleteMessages([msg, successmsg], config.timeouts.messageDelete))
           })
           cBack({
             affected: id,
@@ -202,7 +202,7 @@ commands.comment = {
         }).catch(e => {
           if (e.statusCode === 404) {
             msg.reply('unable to find a suggestion using your query.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           } else {
             logger.log(bot, {
@@ -210,7 +210,7 @@ commands.comment = {
               message: (e.message !== undefined) ? e.message : JSON.stringify(e)
             }, e)
             msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
             })
           }
         })
@@ -220,13 +220,13 @@ commands.comment = {
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
         msg.reply('an error occured, please try again later.').then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       })
     }).catch(e => {
       if (e === 'Not found') {
         msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       } else {
         logger.log(bot, {
@@ -234,7 +234,7 @@ commands.comment = {
           message: (e.message !== undefined) ? e.message : JSON.stringify(e)
         }, e)
         msg.reply('an error occured, please try again later.').then(errmsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg.id, errmsg.id], config.timeouts.errorMessageDelete))
+          setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
         })
       }
     })
