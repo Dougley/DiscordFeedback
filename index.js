@@ -6,6 +6,7 @@ const Commands = require('./Utils/command_engine').Commands
 const AccessChecker = require('./Utils/access_checker')
 const ErrorLog = require('./Utils/error_loggers')
 const GenericLog = require('./Utils/generic_logger')
+const woofmeow = require('./Utils/woofmeow')
 const bot = new Discordie({
   autoReconnect: true
 })
@@ -64,7 +65,9 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
             cause: cmd,
             message: e.message
           })
-          msg.reply('an error occurred while processing this command, the admins have been alerted, please try again later')
+          woofmeow.woofmeow().then((c) => {
+            msg.reply(`an error occurred while processing this command, the admins have been alerted, please try again later.\nHere's your consolation animal image: ${c}`)
+          })
         }
       })
     }
