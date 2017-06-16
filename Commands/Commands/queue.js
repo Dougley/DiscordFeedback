@@ -430,6 +430,31 @@ commands.registerVote = {
             r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
             break
           }
+        case 'adminReviewDelete':
+          {
+            if (reaction.id === '302137375113609219') {
+              genlog.log(bot, user, {
+                message: 'Dismissed a report',
+                affected: doc.UvId
+              })
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been dismissed, no action has been taken.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o, msg]), config.timeouts.messageDelete)
+              })
+            } else if (reaction.id === '302137375092375553') {
+              genlog.log(bot, user, {
+                message: 'Approved a report',
+                affected: doc.UvId,
+                result: `Card with ID ${doc.UvId} has been deleted`
+              })
+
+              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been deleted from Uservoice.`).then(o => {
+                setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+              })
+              deleteFromUV(doc.UvId, uv, bot)
+              r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+            }
+            break
+          }
         case 'adminMergeRequest':
           {
             if (reaction.id === '302137375113609219') {
@@ -490,6 +515,22 @@ function merge (target, dupe, uv) {
           else return resolve(res)
         })
     })
+  })
+}
+
+function deleteFromUV (UVID, uvClient, bot) {
+  uvClient.v1.loginAsOwner().then(i => {
+    i.delete(`forums/${config.uservoice.forumId}/suggestions/${UVID}.json`).catch((e) => {
+      logger.log(bot, {
+        cause: 'card_destroy',
+        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+      }, e)
+    })
+  }).catch((e) => {
+    logger.log(bot, {
+      cause: 'card_destroy',
+      message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+    }, e)
   })
 }
 
