@@ -85,6 +85,14 @@ bot.Dispatcher.on(Events.MESSAGE_REACTION_ADD, (m) => {
   }
 })
 
+bot.Dispatcher.on(Events.GUILD_MEMBER_UPDATE, (c) => {
+  for (let role in c.rolesAdded) {
+    if (role.id === '268815388882632704') {
+      bot.Channels.get('284796966641205249').sendMessage(`Welcome ${c.member.mention} to the custodians!`)
+    }
+  }
+})
+
 bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   setInterval(() => {
     bot.Users.fetchMembers() // Hacky way to cache offline users, #blamelazyloading
