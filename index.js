@@ -14,7 +14,7 @@ const bot = new Discordie({
 var bugsnag = require('bugsnag')
 bugsnag.register(Config.discord.bugsnag)
 
-const UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
+const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
 
 var uvClient = {
   v1: new UserVoice.Client({

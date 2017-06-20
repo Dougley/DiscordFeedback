@@ -7,7 +7,7 @@ var genlog = require('../../Utils/generic_logger')
 var config = require('../../config.js')
 var bugsnag = require('bugsnag')
 
-var UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
+var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
 
 bugsnag.register(config.discord.bugsnag)
 

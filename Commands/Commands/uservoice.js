@@ -4,7 +4,7 @@ var checker = require('../../Utils/access_checker')
 var logger = require('../../Utils/error_loggers')
 var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
-var UVRegex = /http[s]?:\/\/[\w.]*\/forums\/([0-9]{6,})-[\w-]+\/suggestions\/([0-9]{8,})-[\w-]*/
+var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
 
 const entities = new Entities()
 
