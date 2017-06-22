@@ -326,7 +326,7 @@ commands.registerVote = {
                   }, e).catch(e => {
                     if (e === 'Not found') {
                       bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                        setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
                       })
                     } else {
                       logger.log(bot, {
@@ -395,11 +395,11 @@ commands.registerVote = {
                   }).catch(e => {
                     if (e.statusCode === 404) {
                       bot.Channels.get(config.discord.feedChannel).sendMessage('The suggestion is no longer available to be voted on.').then(errmsg => {
-                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
                       })
                     } else if (e.statusCode === 422) {
                       bot.Channels.get(config.discord.feedChannel).sendMessage('The suggestion is no longer open for voting.').then(errmsg => {
-                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
                       })
                     } else {
                       logger.log(bot, {
@@ -415,7 +415,7 @@ commands.registerVote = {
                   }, e).catch(e => {
                     if (e === 'Not found') {
                       bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
-                        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg], config.timeouts.errorMessageDelete))
+                        setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
                       })
                     } else {
                       logger.log(bot, {
