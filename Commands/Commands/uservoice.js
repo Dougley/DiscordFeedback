@@ -109,7 +109,7 @@ commands.submit = {
                 text: entities.decode(data.suggestion.category.name)
               }
             }).then(successmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+              setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
             })
             cBack({
               result: data.suggestion.url
@@ -193,7 +193,7 @@ commands.comment = {
               }
             ]
           }).then(successmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+            setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
           })
           cBack({
             affected: id,
