@@ -521,14 +521,20 @@ function merge (target, dupe, uv) {
 function deleteFromUV (UVID, uvClient, bot) {
   uvClient.v1.loginAsOwner().then(i => {
     i.delete(`forums/${config.uservoice.forumId}/suggestions/${UVID}.json`).catch((e) => {
-      logger.log(bot, {
-        cause: 'card_destroy',
-        message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-      }, e)
+      if (e.statusCode === 404) {
+        bot.Channels.find(c => c.name === 'admin-queue').sendMessage('That suggestion doesn\'t seem to exist, (someone must have beat you to it).').then(o => {
+          setTimeout(() => o.delete(), config.timeouts.errorMessageDelete)
+        })
+      } else {
+        logger.log(bot, {
+          cause: 'card_destroy',
+          message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+        }, e)
+      }
     })
   }).catch((e) => {
     logger.log(bot, {
-      cause: 'card_destroy',
+      cause: 'card_destroy_login',
       message: (e.message !== undefined) ? e.message : JSON.stringify(e)
     }, e)
   })

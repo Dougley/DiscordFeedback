@@ -12,7 +12,7 @@ let Config = {
     }
   },
   uservoice: {
-    UVDomain: 'discordapp', // *.uservoice.com, THIS IS NOT YOUR CUSTOM DOMAIN 
+    UVDomain: 'discordapp', // *.uservoice.com, THIS IS NOT YOUR CUSTOM DOMAIN
     subdomain: 'feedback', // UserVoice subdomain
     domain: 'discordapp.com', // UserVoice domain
     key: 'loldiscord', // UserVoice API key
