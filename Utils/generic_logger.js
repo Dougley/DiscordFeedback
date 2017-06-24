@@ -1,11 +1,10 @@
-const Config = require('../config.js')
 // const Analytics = require('./analytics.js')
 
 exports.log = function (bot, user, cObj) {
   var fields = []
   if (cObj.result !== undefined) fields.push({name: 'This resulted in the following:', value: cObj.result, inline: false})
   if (cObj.affected !== undefined) fields.push({name: 'This affected the following cards:', value: cObj.affected, inline: false})
-  if (cObj.awardPoints === true) Analytics.log(cObj)
+//  if (cObj.awardPoints === true) Analytics.log(cObj)
   bot.Channels.find((c) => c.name === 'bot-log').sendMessage('', false, {
     color: 0x3498db,
     author: {
@@ -22,3 +21,4 @@ exports.log = function (bot, user, cObj) {
     }
   })
 }
+
