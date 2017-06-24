@@ -1,6 +1,6 @@
 var commands = []
 
-var checker = require('../../Utils/access_checker')
+//var checker = require('../../Utils/access_checker')
 var logger = require('../../Utils/error_loggers')
 var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
