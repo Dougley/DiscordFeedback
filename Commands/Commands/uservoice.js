@@ -1,6 +1,6 @@
 var commands = []
 
-//var checker = require('../../Utils/access_checker')
+// var checker = require('../../Utils/access_checker')
 var logger = require('../../Utils/error_loggers')
 var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
@@ -109,7 +109,7 @@ commands.submit = {
                 text: entities.decode(data.suggestion.category.name)
               }
             }).then(successmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
+              setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
             })
             cBack({
               result: data.suggestion.url
@@ -193,7 +193,7 @@ commands.comment = {
               }
             ]
           }).then(successmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
+            setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
           })
           cBack({
             affected: id,

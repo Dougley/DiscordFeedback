@@ -126,13 +126,13 @@ commands.dupe = {
           }).then(() => {
             wait(bot, msg).then((q) => {
               if (q === null) {
-                msg.reply('you took too long to answer, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
+                msg.reply('you took too long to answer, the operation has been cancelled.').then(errmsg => {
+                  setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
                 })
               }
               if (q === false) {
                 msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
+                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
                 })
               }
               if (q === true) {
@@ -140,7 +140,7 @@ commands.dupe = {
                   affected: id
                 })
                 msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.errorMessageDelete)
+                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
                 })
                 bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
                   color: 0x3498db,
