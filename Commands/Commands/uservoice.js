@@ -55,7 +55,7 @@ commands.vote = {
       })
     }).catch(e => {
       if (e === 'Not found') {
-        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+        msg.reply(`I was unable to find your details, make sure you've logged into the website at <https://${config.uservoice.subdomain}.${config.uservoice.domain}> at least once.`).then(errmsg => {
           setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
         })
       } else {
@@ -134,7 +134,7 @@ commands.submit = {
         })
       }).catch(e => {
         if (e === 'Not found') {
-          msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+          msg.reply(`I was unable to find your details, make sure you've logged into the website at <https://${config.uservoice.subdomain}.${config.uservoice.domain}> at least once.`).then(errmsg => {
             setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
           })
         } else {
@@ -225,7 +225,7 @@ commands.comment = {
       })
     }).catch(e => {
       if (e === 'Not found') {
-        msg.reply("I was unable to find your details, make sure you've logged into the website at least once.").then(errmsg => {
+        msg.reply(`I was unable to find your details, make sure you've logged into the website at <https://${config.uservoice.subdomain}.${config.uservoice.domain}> at least once.`).then(errmsg => {
           setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
         })
       } else {

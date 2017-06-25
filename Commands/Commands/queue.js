@@ -325,7 +325,7 @@ commands.registerVote = {
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
                   }, e).catch(e => {
                     if (e === 'Not found') {
-                      bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
+                      bot.Channels.get(doc.channel).sendMessage(`${user.mention}, your details were not found. Make sure you've logged into the website at <https://${config.uservoice.subdomain}.${config.uservoice.domain}> at least once.`).then(errmsg => {
                         setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
                       })
                     } else {
@@ -414,7 +414,7 @@ commands.registerVote = {
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
                   }, e).catch(e => {
                     if (e === 'Not found') {
-                      bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details are not found.`).then(errmsg => {
+                      bot.Channels.get(config.discord.feedChannel).sendMessage(`${user.mention}, your details were not found. Make sure you've logged into the website at <https://${config.uservoice.subdomain}.${config.uservoice.domain}> at least once.`).then(errmsg => {
                         setTimeout(() => errmsg.delete(), config.timeouts.errorMessageDelete)
                       })
                     } else {
