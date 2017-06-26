@@ -276,7 +276,7 @@ commands.registerVote = {
                       msg.removeReaction({
                         id: '302137374920671233',
                         name: 'report'
-                      }, reaction.id)
+                      }, reaction[0])
                     }
                     msg.addReaction({
                       name: 'reported',
