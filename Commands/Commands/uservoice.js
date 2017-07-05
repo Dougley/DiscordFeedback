@@ -241,6 +241,116 @@ commands.comment = {
   }
 }
 
+commands.info = {
+  modOnly: false,
+  adminOnly: false,
+  fn: function (bot, msg, suffix, uvClient, cBack) {
+    msg.channel.sendTyping()
+    let mentions = msg.mentions
+    let userid = null
+    let uvid = null
+    let avatar = null
+    if (mentions.length !== 0) userid = mentions[0].id // Mention given? Convert to User ID
+    else if (suffix.match(/(\d{16,18})/g) !== null) { // User ID given? Set User ID
+      userid = suffix.match(/(\d{16,18})/)[1]
+    } else if (suffix.match(/(.{2,32}#\d{4})/g) !== null) { // NAME#DISCRIM given? Search for user in server and set User ID
+      let namedisc = suffix.match(/(.{2,32})#(\d{4})/g)[0]
+      let members = msg.guild.members
+      members.forEach(function (member) {
+        if (member.username === namedisc[1] && member.discriminator === namedisc[2]) userid = member.id
+      })
+      if (userid === null) { // Can't find user by that? Abort mission
+        msg.reply(`Unable to find a user named ${suffix}. The user has to be in this server for using NAME#DISCRIM search. Use a Discord or UserVoice ID.`).then(errMsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+        })
+      }
+    } else if (suffix.match(/(\d{9})/) !== null) uvid = suffix.match(/(\d{9})/)[1] // 9 Character UVID given? tyvm set it
+    else {
+      msg.channel.sendMessage('Invalid usage. Use a mention, ID or Username#Discriminator combination.').then(errMsg => { // crap given? Don't give a crap
+        setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+      })
+    }
+    if (userid !== null || uvid !== null) { // Do we have anything to live off of?
+      if (uvid === null) {
+        uvClient.v1.loginAsOwner().then(i => { // Get UVID from User ID if needed
+          i.get('users/search.json', {
+            guid: userid
+          }).then((data) => {
+            if (data.users !== undefined || data.users.length === 1) {
+              uvid = data.users[0].id
+            }
+          }).catch(() => {}) // Error handled below
+        })
+      } else {
+        uvClient.v1.loginAsOwner().then(i => { // Get User ID from UVID if needed
+          i.get(`users/${uvid}.json`).then(userdata => {
+            avatar = userdata.user.avatar_url
+            userid = avatar.match(/https?:\/\/[\w.]+\/avatars\/(\d+)\/.+/) // Grab userid from Avatar URL
+          }).catch(() => {}) // Error handling for this comes later
+        })
+      }
+      uvClient.v1.loginAsOwner().then(c => {
+        c.get(`users/${uvid}.json`).then(data => {
+          let dcuser = '*Cannot grab user.*'
+          msg.guild.members.forEach(function (member) { // Search server for a member with that DCID and return a NAME#DISCRIM
+            if (userid === member.id) {
+              dcuser = `${member.username}#${member.discriminator}`
+            }
+          })
+          let latestSuggTitle = 'No suggestion available'
+          let latestSuggLink = null
+          c.get(`users/${uvid}/suggestions.json`, {
+            per_page: 1,
+            sort: 'newest'
+          }).then(response => {
+            latestSuggLink = response.suggestions[0].url
+            latestSuggTitle = response.suggestions[0].title
+            msg.channel.sendMessage(`Information for User ${data.user.name}:`, false, {
+              color: 0xfc9822,
+              title: `${data.user.name} - UserVoice`,
+              description: `UserVoice ID: ${data.user.id}`,
+              url: data.user.url,
+              thumbnail: {
+                url: data.user.avatar_url
+              },
+              fields: [{
+                name: 'Suggestions submitted',
+                value: data.user.created_suggestions_count,
+                inline: true
+              },
+              {
+                name: 'Upvotes given',
+                value: data.user.supported_suggestions_count,
+                inline: true
+              },
+              {
+                name: 'First UserVoice Login',
+                value: data.user.created_at,
+                inline: true
+              },
+              {
+                name: 'Last Submitted Suggestion',
+                value: `[${latestSuggTitle}](${latestSuggLink})`,
+                inline: true
+              },
+              {
+                name: 'Discord Username',
+                value: dcuser,
+                inline: false
+              }
+              ]
+            })
+          }).catch(() => {}) // Make bugsnag ignore it, error handling below
+        }).catch(() => {
+          msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
+            setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+          })
+        })
+      })
+    }
+  }
+}
+
 function getMail (uv, user) {
   return new Promise(function (resolve, reject) {
     if (config.debug === true) return resolve('hello@dougley.com') // no dox pls
