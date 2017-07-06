@@ -510,7 +510,7 @@ commands.registerVote = {
   }
 }
 
-function merge (target, dupe, uv) {
+function merge (target, dupe, uv, bot) {
   return new Promise((resolve, reject) => {
     uv.v2.loginAsOwner(config.uservoice.secret.trim()).then(client => {
       require('superagent')
@@ -518,8 +518,11 @@ function merge (target, dupe, uv) {
         .send(`action.notify_supporters=false&action.reply_to=&action.links.to_suggestion=${dupe}&include_ids=${target}`)
         .set('Authorization', 'Bearer ' + client.accessToken)
         .end((err, res) => {
-          if (err || res.statusCode !== 200) return reject(err)
-          else return resolve(res)
+          // if (err || res.statusCode !== 200) return reject(err)
+          // else return resolve(res)
+          bot.Channels.find(c => c.name === 'bot-error').sendMessage(res)
+          bot.Channels.find(c => c.name === 'bot-error').sendMessage(err)
+          return resolve(res)
         })
     })
   })
