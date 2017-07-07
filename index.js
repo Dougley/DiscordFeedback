@@ -43,7 +43,7 @@ var uvClient = {
   }),
   v2: new UserVoice.ClientV2({
     clientId: Config.uservoice.key.trim(),
-    subdomain: Config.uservoice.domain.trim()
+    subdomain: Config.uservoice.UVDomain.trim()
   })
 }
 
