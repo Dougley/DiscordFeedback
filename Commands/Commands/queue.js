@@ -480,7 +480,7 @@ commands.registerVote = {
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
-          merge(doc.UV1, doc.UV2, uv).catch((e) => {
+          merge(doc.UV1, doc.UV2, uv, bot).catch((e) => {
             logger.log(bot, {
               cause: 'merge_apply',
               message: e.message
@@ -495,7 +495,7 @@ commands.registerVote = {
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
-          merge(doc.UV2, doc.UV1, uv).catch((e) => {
+          merge(doc.UV2, doc.UV1, uv, bot).catch((e) => {
             logger.log(bot, {
               cause: 'flipmerge_apply',
               message: e.message
