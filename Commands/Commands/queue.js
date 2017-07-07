@@ -480,7 +480,7 @@ commands.registerVote = {
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
-          merge(doc.UV1, doc.UV2, uv, bot).catch((e) => {
+          merge(doc.UV1, doc.UV2, uv).catch((e) => {
             logger.log(bot, {
               cause: 'merge_apply',
               message: e.message
@@ -495,7 +495,7 @@ commands.registerVote = {
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been flip-merged.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
-          merge(doc.UV2, doc.UV1, uv, bot).catch((e) => {
+          merge(doc.UV2, doc.UV1, uv).catch((e) => {
             logger.log(bot, {
               cause: 'flipmerge_apply',
               message: e.message
@@ -510,7 +510,7 @@ commands.registerVote = {
   }
 }
 
-function merge (target, dupe, uv, bot) {
+function merge (target, dupe, uv) {
   return new Promise((resolve, reject) => {
     uv.v2.loginAsOwner(config.uservoice.secret.trim()).then(client => {
       require('superagent')
@@ -518,11 +518,8 @@ function merge (target, dupe, uv, bot) {
         .send(`action.notify_supporters=false&action.reply_to=&action.links.to_suggestion=${dupe}&include_ids=${target}`)
         .set('Authorization', 'Bearer ' + client.accessToken)
         .end((err, res) => {
-          // if (err || res.statusCode !== 200) return reject(err)
-          // else return resolve(res)
-          bot.Channels.find(c => c.name === 'bot-error').sendMessage(res)
-          bot.Channels.find(c => c.name === 'bot-error').sendMessage(err)
-          return resolve(res)
+          if (err || res.statusCode !== 200) return reject(err)
+          else return resolve(res)
         })
     })
   })
