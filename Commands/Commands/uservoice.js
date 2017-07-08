@@ -245,67 +245,23 @@ commands.info = {
   modOnly: false,
   adminOnly: false,
   fn: function (bot, msg, suffix, uvClient, cBack) {
-    msg.channel.sendTyping()
-    let mentions = msg.mentions
-    let userid = null
-    let uvid = null
-    let avatar = null
-    if (mentions.length !== 0) userid = mentions[0].id // Mention given? Convert to User ID
-    else if (suffix.match(/(\d{16,18})/g) !== null) { // User ID given? Set User ID
-      userid = suffix.match(/(\d{16,18})/)[1]
-    } else if (suffix.match(/(.{2,32}#\d{4})/g) !== null) { // NAME#DISCRIM given? Search for user in server and set User ID
-      let namedisc = suffix.match(/(.{2,32})#(\d{4})/g)[0]
-      let members = msg.guild.members
-      members.forEach(function (member) {
-        if (member.username === namedisc[1] && member.discriminator === namedisc[2]) userid = member.id
-      })
-      if (userid === null) { // Can't find user by that? Abort mission
-        msg.reply(`Unable to find a user named ${suffix}. The user has to be in this server for using NAME#DISCRIM search. Use a Discord or UserVoice ID.`).then(errMsg => {
-          setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
-        })
-      }
-    } else if (suffix.match(/(\d{9})/) !== null) uvid = suffix.match(/(\d{9})/)[1] // 9 Character UVID given? tyvm set it
-    else {
-      msg.channel.sendMessage('Invalid usage. Use a mention, ID or Username#Discriminator combination.').then(errMsg => { // crap given? Don't give a crap
-        setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
-      })
-    }
-    if (userid !== null || uvid !== null) { // Do we have anything to live off of?
-      if (uvid === null) {
-        uvClient.v1.loginAsOwner().then(i => { // Get UVID from User ID if needed
-          i.get('users/search.json', {
-            guid: userid
-          }).then((data) => {
-            if (data.users !== undefined || data.users.length === 1) {
-              uvid = data.users[0].id
-            }
-          }).catch(() => {}) // Error handled below
-        })
-      } else {
-        uvClient.v1.loginAsOwner().then(i => { // Get User ID from UVID if needed
-          i.get(`users/${uvid}.json`).then(userdata => {
-            avatar = userdata.user.avatar_url
-            userid = avatar.match(/https?:\/\/[\w.]+\/avatars\/(\d+)\/.+/) // Grab userid from Avatar URL
-          }).catch(() => {}) // Error handling for this comes later
-        })
-      }
+    function getInfo (uvid, userid) {
       uvClient.v1.loginAsOwner().then(c => {
         c.get(`users/${uvid}.json`).then(data => {
           let dcuser = '*Cannot grab user.*'
-          msg.guild.members.forEach(function (member) { // Search server for a member with that DCID and return a NAME#DISCRIM
-            if (userid === member.id) {
-              dcuser = `${member.username}#${member.discriminator}`
-            }
-          })
+          let member = msg.guild.members.find(member => userid === member.id)
+          if (member) { // Search server for a member with that DCID and return a NAME#DISCRIM
+            dcuser = `${member.username}#${member.discriminator}`
+          }
           let latestSuggTitle = 'No suggestion available'
-          let latestSuggLink = null
+          let latestSuggLink
           c.get(`users/${uvid}/suggestions.json`, {
             per_page: 1,
             sort: 'newest'
           }).then(response => {
             latestSuggLink = response.suggestions[0].url
             latestSuggTitle = response.suggestions[0].title
-            msg.channel.sendMessage(`Information for User ${data.user.name}:`, false, {
+            return msg.channel.sendMessage(`Information for User ${data.user.name}:`, false, {
               color: 0xfc9822,
               title: `${data.user.name} - UserVoice`,
               description: `UserVoice ID: ${data.user.id}`,
@@ -342,11 +298,61 @@ commands.info = {
             })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {
-          msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
+          return msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
             setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
           })
         })
       })
+    }
+    
+    msg.channel.sendTyping()
+    let mentions = msg.mentions
+    let userid
+    let uvid
+
+    if (mentions.length !== 0) {
+      userid = mentions[0].id // Mention given? Convert to User ID
+    } else if (suffix.match(/(\d{16,18})/g)) { // User ID given? Set User ID
+      userid = suffix.match(/(\d{16,18})/)[1]
+    } else if (suffix.match(/(.{2,32}#\d{4})/g)) { // NAME#DISCRIM given? Search for user in server and set User ID
+      let namedisc = suffix.match(/(.{2,32})#(\d{4})/g)[0]
+      let member = msg.guild.members.find(member => member.username === namedisc[1] && member.discriminator === namedisc[2])
+      if (userid) {
+        userid = member.id
+      } else { // Can't find user by that? Abort mission
+        return msg.reply(`Unable to find a user named ${suffix}. The user has to be in this server for using NAME#DISCRIM search. Use a Discord or UserVoice ID.`).then(errMsg => {
+          setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+        })
+      }
+    } else if (suffix.match(/(\d{9})/)) {
+      uvid = suffix.match(/(\d{9})/)[1] // 9 Character UVID given? tyvm set it
+    } else {
+      return msg.channel.sendMessage('Invalid usage. Use a mention, ID or Username#Discriminator combination.').then(errMsg => { // crap given? Don't give a crap
+        setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+      })
+    }
+
+    if (userid || uvid) { // Do we have anything to live off of?
+      if (!uvid) { // No UVID? Try to search user
+        uvClient.v1.loginAsOwner().then(i => {
+          i.get('users/search.json', {
+            guid: userid
+          }).then((data) => {
+            if (data.users && data.users.length === 1) {
+              let id = data.users[0].id
+              getInfo(id, userid, null)
+            }
+          }).catch(() => {}) // Error handled below
+        })
+      } else { // OwO UVID is given, try to get dat user ID
+        uvClient.v1.loginAsOwner().then(i => {
+          i.get(`users/${uvid}.json`).then(userdata => {
+            let avatar = userdata.user.avatar_url
+            let id = avatar.match(/https?:\/\/[\w.]+\/avatars\/(\d+)\/.+/) // Grab userid from Avatar URL
+            getInfo(uvid, id[1])
+          }).catch(() => {}) // Error handling for this comes later
+        })
+      }
     }
   }
 }
