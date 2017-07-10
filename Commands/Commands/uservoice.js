@@ -292,7 +292,7 @@ commands.info = {
               }
               ],
               footer: {
-                text: 'User created on ' + moment('2015-11-18T23:52:49.000Z').format("dddd, MMMM Do YYYY, k:mm:ss"),
+                text: 'User created on ' + moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss"),
                 icon_url: data.user.avatar_url
               }
             })
