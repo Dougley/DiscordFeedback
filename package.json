@@ -1,6 +1,6 @@
 {
   "name": "discord-feedback",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bot for the Discord Feedback server",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "bugsnag": "^1.9.1",
     "discordie": "^0.10.0",
     "html-entities": "^1.2.1",
+    "moment": "^2.18.1",
     "require-directory": "^2.1.1",
     "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"

@@ -114,6 +114,10 @@ commands.dupe = {
         return
       }
     }
+    if (id === id2) {
+      msg.reply('you cannot merge 2 of the same suggestions.')
+      return
+    }
     uv.v1.loginAsOwner().then(c => {
       c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
         c.get(`forums/${config.uservoice.forumId}/suggestions/${id2}.json`).then((data2) => {
@@ -480,10 +484,10 @@ commands.registerVote = {
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The report for ${doc.embed.title} has been approved, the card has been merged.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
-          merge(doc.UV1, doc.UV2, uv).catch((e) => {
+          merge(doc.UV1, doc.UV2, uv).catch((e, body) => {
             logger.log(bot, {
               cause: 'merge_apply',
-              message: e.message
+              message: body
             }, e)
           })
           r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
@@ -518,7 +522,7 @@ function merge (target, dupe, uv) {
         .send(`action.notify_supporters=false&action.reply_to=&action.links.to_suggestion=${dupe}&include_ids=${target}`)
         .set('Authorization', 'Bearer ' + client.accessToken)
         .end((err, res) => {
-          if (err || res.statusCode !== 200) return reject(err)
+          if (err || res.statusCode !== 200) return reject(err, res.body)
           else return resolve(res)
         })
     })

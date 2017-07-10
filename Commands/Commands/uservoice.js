@@ -261,6 +261,7 @@ commands.info = {
           }).then(response => {
             latestSuggLink = response.suggestions[0].url
             latestSuggTitle = response.suggestions[0].title
+            let moment = require('moment')
             return msg.channel.sendMessage(`Information for User ${data.user.name}:`, false, {
               color: 0xfc9822,
               title: `${data.user.name} - UserVoice`,
@@ -280,12 +281,7 @@ commands.info = {
                 inline: true
               },
               {
-                name: 'First UserVoice Login',
-                value: data.user.created_at,
-                inline: true
-              },
-              {
-                name: 'Last Submitted Suggestion',
+                name: 'Last Suggestion Interacted with',
                 value: `[${latestSuggTitle}](${latestSuggLink})`,
                 inline: true
               },
@@ -294,7 +290,11 @@ commands.info = {
                 value: dcuser,
                 inline: false
               }
-              ]
+              ],
+              footer: {
+                text: 'User created on ' + moment('2015-11-18T23:52:49.000Z').format("dddd, MMMM Do YYYY, k:mm:ss"),
+                icon_url: data.user.avatar_url
+              }
             })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {
@@ -317,7 +317,7 @@ commands.info = {
     } else if (suffix.match(/(.{2,32}#\d{4})/g)) { // NAME#DISCRIM given? Search for user in server and set User ID
       let namedisc = suffix.match(/(.{2,32})#(\d{4})/g)[0]
       let member = msg.guild.members.find(member => member.username === namedisc[1] && member.discriminator === namedisc[2])
-      if (userid) {
+      if (member) {
         userid = member.id
       } else { // Can't find user by that? Abort mission
         return msg.reply(`Unable to find a user named ${suffix}. The user has to be in this server for using NAME#DISCRIM search. Use a Discord or UserVoice ID.`).then(errMsg => {

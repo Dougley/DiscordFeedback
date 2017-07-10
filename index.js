@@ -7,6 +7,7 @@ const AccessChecker = require('./Utils/access_checker')
 const ErrorLog = require('./Utils/error_loggers')
 const GenericLog = require('./Utils/generic_logger')
 const woofmeow = require('./Utils/woofmeow')
+const Analytics = require('./Utils/orwell')
 const bot = new Discordie({
   autoReconnect: true
 })
@@ -48,6 +49,7 @@ var uvClient = {
 }
 
 bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
+  if (c.message.isPrivate === true) return
   if (c.message.channel.id !== Config.discord.feedChannel && c.message.content.match(UVRegex) !== null && c.message.content.indexOf(Config.discord.prefix) !== 0) {
     let parts = c.message.content.match(UVRegex)
     Commands['chatVoteInit'].fn(c.message, parts[2], uvClient)
@@ -56,7 +58,9 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
     Commands['newCardInit'].fn(c.message)
     return
   }
-  if (c.message.isPrivate === true) return
+  if (!c.message.author.bot) {
+    Analytics.awardPoints(c.message.author.id, 'messages')
+  }
   if (c.message.content.indexOf(Config.discord.prefix) === 0) {
     var cmd = c.message.content.substr(Config.discord.prefix.length).split(' ')[0].toLowerCase()
     var suffix
@@ -75,7 +79,8 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
             GenericLog.log(bot, c.message.author, {
               message: `Ran the command \`${cmd}\``,
               result: res.result,
-              affected: res.affected
+              affected: res.affected,
+              awardPoints: true
             })
           })
         } catch (e) {
