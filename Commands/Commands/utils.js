@@ -45,7 +45,7 @@ commands.stats = {
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do YYYY")
           messagesField.push({
-            name: `Messages on ${parsed}`,
+            name: `Messages on ${parsed} | `,
             value: data.messages[date],
             inline: true
           })
@@ -56,7 +56,7 @@ commands.stats = {
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do YYYY")
           commandsField.push({
-            name: `Commands on ${parsed}`,
+            name: `Commands on ${parsed} | `,
             value: data.messages[date],
             inline: false
           })
