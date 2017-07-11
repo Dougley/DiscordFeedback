@@ -327,7 +327,7 @@ commands.info = {
       }
     } else if (suffix.match(/(\d{9})/)) {
       uvid = suffix.match(/(\d{9})/)[1] // 9 Character UVID given? tyvm set it
-    } else if (suffix === null) {
+    } else if (!suffix) {
       userid = msg.author.id
     } else {
       return msg.channel.sendMessage('Invalid usage. Use a mention, ID or Username#Discriminator combination.').then(errMsg => { // crap given? Don't give a crap
