@@ -292,7 +292,7 @@ commands.info = {
               }
               ],
               footer: {
-                text: 'User created on ' + moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss"),
+                text: 'User created on',
                 icon_url: data.user.avatar_url
               },
               timestamp: moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss")
