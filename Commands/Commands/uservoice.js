@@ -294,7 +294,8 @@ commands.info = {
               footer: {
                 text: 'User created on ' + moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss"),
                 icon_url: data.user.avatar_url
-              }
+              },
+              timestamp: moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss")
             })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {
