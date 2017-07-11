@@ -111,7 +111,7 @@ commands.lookup = {
           let parsed = moment(parseInt(date)).format("MMM Do YYYY")
           commandsField.push({
             name: `Commands on ${parsed}`,
-            value: data.messages[date],
+            value: data.commands[date],
             inline: false
           })
           if (commandsField.length === 3) break
