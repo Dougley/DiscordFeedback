@@ -294,6 +294,8 @@ commands.info = {
               footer: {
                 text: 'User created on ' + moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss"),
                 icon_url: data.user.avatar_url
+              }
+            })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {
           return msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
