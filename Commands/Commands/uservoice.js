@@ -261,7 +261,6 @@ commands.info = {
           }).then(response => {
             latestSuggLink = response.suggestions[0].url
             latestSuggTitle = response.suggestions[0].title
-            let moment = require('moment')
             return msg.channel.sendMessage(`Information for User ${data.user.name}:`, false, {
               color: 0xfc9822,
               title: `${data.user.name} - UserVoice`,
@@ -292,9 +291,10 @@ commands.info = {
               }
               ],
               footer: {
-                text: 'User created on ' + moment(data.user.created_at).format("dddd, MMMM Do YYYY, k:mm:ss"),
+                text: 'User created on',
                 icon_url: data.user.avatar_url
-              }
+              },
+              timestamp: new Date(data.user.created_at)
             })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {

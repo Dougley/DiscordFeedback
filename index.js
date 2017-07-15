@@ -121,6 +121,7 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
     bot.Users.fetchMembers() // Hacky way to cache offline users, #blamelazyloading
   }, 600000)
   console.log('Feedback bot is ready!')
+  Commands['initializeTop'].fn(bot, uvClient)
 })
 
 process.on('unhandledRejection', (reason, p) => {
