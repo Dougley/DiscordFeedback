@@ -284,12 +284,7 @@ commands.registerVote = {
                   })
                 }
               }).catch(e => {
-                if (e.statusCode === 404) {
-                  logger.log(bot, {
-                    cause: 'top10_vote',
-                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-                  }, e)
-                } else {
+                if (e.statusCode !== 404) {
                   logger.log(bot, {
                     cause: 'top10_vote_apply',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
