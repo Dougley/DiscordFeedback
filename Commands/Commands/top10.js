@@ -19,7 +19,7 @@ commands.regenerate = {
   fn: function (bot, msg, suffix, uv) {
     msg.reply('regenerating the top 10, this could take a while...').then((msg) => {
       generateTop(bot, uv).then(() => {
-        msg.edit('Done!, you can check the results at <#268812972401360906>')
+        msg.edit('Done! You can check the results at <#268812972401360906>')
       })
     })
   }
