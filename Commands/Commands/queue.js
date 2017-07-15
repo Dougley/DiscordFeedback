@@ -270,6 +270,49 @@ commands.registerVote = {
         return
       }
       switch (doc.type) {
+      case 'upvoteOnly' : {
+        if (reaction.id === '302138464986595339') {
+          getMail(uv, user.id).then(f => {
+            uv.v1.loginAs(f).then(c => {
+              c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/votes.json`, {
+                to: 1
+              }).then((s) => {
+                if (user !== null) {
+                  genlog.log(bot, user, {
+                    message: 'Top10-voted',
+                    affected: doc.UvId
+                  })
+                }
+              }).catch(e => {
+                if (e.statusCode === 404) {
+                  logger.log(bot, {
+                    cause: 'top10_vote',
+                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                  }, e)
+                } else {
+                  logger.log(bot, {
+                    cause: 'top10_vote_apply',
+                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                  }, e)
+                }
+              })
+            }).catch(e => {
+              logger.log(bot, {
+                cause: 'login_as',
+                message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+              }, e).catch(e => {
+                if (e !== 'Not found') {
+                  logger.log(bot, {
+                    cause: 'email_search',
+                    message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                  }, e)
+                }
+              })
+            })
+          })
+        }
+        break
+      }
       case 'chatVote': {
         if (reaction.id === '302137374920671233') {
           checker.getLevel(user.memberOf('268811439588900865'), function (l) {
