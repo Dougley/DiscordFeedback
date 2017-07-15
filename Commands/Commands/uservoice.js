@@ -294,7 +294,7 @@ commands.info = {
                 text: 'User created on',
                 icon_url: data.user.avatar_url
               },
-              timestamp: data.user.created_at
+              timestamp: new Date(data.user.created_at)
             })
           }).catch(() => {}) // Make bugsnag ignore it, error handling below
         }).catch(() => {
