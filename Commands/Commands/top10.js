@@ -17,8 +17,10 @@ commands.regenerate = {
   adminOnly: true,
   modOnly: false,
   fn: function (bot, msg, suffix, uv) {
-    msg.reply('regenerating the top 10, this could take a while...').then(() => {
-      generateTop(bot, uv)
+    msg.reply('regenerating the top 10, this could take a while...').then((msg) => {
+      generateTop(bot, uv).then(() => {
+        msg.edit('done!, you can check the results at <#268812972401360906>')
+      })
     })
   }
 }
@@ -58,6 +60,7 @@ function generateTop (bot, uv) {
             }
           })
         }
+        return resolve()
       })
     })
   })
