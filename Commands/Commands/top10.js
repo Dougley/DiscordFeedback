@@ -60,13 +60,16 @@ function generateTop (bot, uv) {
                 })
               } else {
                 message.edit('', embed).then(msg => {
-                  r.db('DFB').table('queue').get(msg.id).update({
-                    type: 'upvoteOnly',
-                    UvId: suggestion.id
-                  }).then(() => {
-                    msg.addReaction({
-                      id: '302138464986595339',
-                      name: 'upvote'
+                  r.db('DFB').table('queue').get(msg.id).then(doc => {
+                    if (doc.UvId !== suggestion.id) msg.clearReactions()
+                    r.db('DFB').table('queue').get(msg.id).update({
+                      type: 'upvoteOnly',
+                      UvId: suggestion.id
+                    }).then(() => {
+                      msg.addReaction({
+                        id: '302138464986595339',
+                        name: 'upvote'
+                      })
                     })
                   })
                 })
