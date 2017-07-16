@@ -29,36 +29,50 @@ function generateTop (bot, uv) {
   return new Promise(function(resolve, reject) {
     let channel = bot.Channels.find(c => c.name === 'top-10-suggestions')
     let messages
+    let counter = 0
+    let fetched = false
     channel.fetchMessages().then(msgs => {
       messages = msgs.messages.filter(y => y.author.id === bot.User.id)
+      fetched = messages.length > 0
     })
     uv.v1.loginAsOwner().then(f => {
-      f.get(`forums/${config.uservoice.forumId}/suggestions.json`).then(data => {
+      f.get(`forums/${config.uservoice.forumId}/suggestions.json`, {
+        per_page: 25
+      }).then(data => {
         for (let suggestion of data.suggestions) {
-          generateEmbed(suggestion).then(embed => {
-            let message = messages.pop()
-            if (!message) {
-              channel.sendMessage('', false, embed).then(msg => {
-                r.db('DFB').table('queue').insert({
-                  id: msg.id,
-                  type: 'upvoteOnly',
-                  UvId: suggestion.id
-                }).then(() => {
-                  msg.addReaction({
-                    id: '302138464986595339',
-                    name: 'upvote'
+          if (counter === 10) break
+          if (!suggestion.status || suggestion.status && suggestion.status.name !== 'completed') {
+            counter++
+            generateEmbed(suggestion).then(embed => {
+              let message = messages.pop()
+              if (!message && fetched === false) {
+                channel.sendMessage('', false, embed).then(msg => {
+                  r.db('DFB').table('queue').insert({
+                    id: msg.id,
+                    type: 'upvoteOnly',
+                    UvId: suggestion.id
+                  }).then(() => {
+                    msg.addReaction({
+                      id: '302138464986595339',
+                      name: 'upvote'
+                    })
                   })
                 })
-              })
-            } else {
-              message.edit('', embed).then(msg => {
-                r.db('DFB').table('queue').get(msg.id).update({
-                  type: 'upvoteOnly',
-                  UvId: suggestion.id
+              } else {
+                message.edit('', embed).then(msg => {
+                  r.db('DFB').table('queue').get(msg.id).update({
+                    type: 'upvoteOnly',
+                    UvId: suggestion.id
+                  }).then(() => {
+                    msg.addReaction({
+                      id: '302138464986595339',
+                      name: 'upvote'
+                    })
+                  })
                 })
-              })
-            }
-          })
+              }
+            })
+          }
         }
         return resolve()
       })
@@ -89,7 +103,7 @@ function generateEmbed (data) {
         timestamp: new Date(data.created_at),
         color: (data.status) ? parseInt(data.status.hex_color.substr(1), 16) : 0x595f68,
         footer: {
-          text: (data.topic.forum.name) ? entities.decode(data.topic.forum.name) : 'Uncategorised'
+          text: (data.category) ? entities.decode(data.category.name) : 'Uncategorised'
         },
         author: {
           name: entities.decode(data.creator.name),
