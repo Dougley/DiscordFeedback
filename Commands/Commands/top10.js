@@ -109,9 +109,9 @@ function generateEmbed (data) {
           text: (data.category) ? entities.decode(data.category.name) : 'Uncategorised'
         },
         author: {
-          name: entities.decode(data.creator.name),
-          url: data.creator.url,
-          icon_url: data.creator.avatar_url
+          name: (data.creator) ? entities.decode(data.creator.name) : 'Anonymous',
+          url: (data.creator) ? data.creator.url : undefined,
+          icon_url: (data.creator) ? data.creator.avatar_url : 'https://assets1.uvcdn.com/pkg/admin/icons/user_70-62136f6de7efc58cc79dabcfed799c01.png' // This is the default UV avatar
         },
         fields: embedFields
       })
