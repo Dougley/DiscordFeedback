@@ -89,7 +89,7 @@ commands.lookup = {
   fn: function (bot, msg, suffix) {
     msg.channel.sendTyping()
     let moment = require('moment') // forgive me father for i have sinned
-    analytics.getPoints(suffix).then(data => {
+    analytics.getPoints(msg.mentions[0].id).then(data => {
       if (data === null) return msg.reply("couldn't find data on this user.")
       let now = new Date()
       let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
