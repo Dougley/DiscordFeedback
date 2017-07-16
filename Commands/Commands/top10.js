@@ -87,12 +87,12 @@ function generateEmbed (data) {
   return new Promise(function(resolve, reject) {
     try {
       let embedFields = (data.response) ? [{
-        name: data.status ? `${entities.decode(data.status_changed_by.name)} set the status to ${entities.decode(data.status.name)}` : `${entities.decode(data.status_changed_by.name)} responded:`,
-        value: (data.response) ? entities.decode(data.response.text).length > 2000 ? '*Content too long, check the feedback website instead.*' : entities.decode(data.response.text) : 'No comment',
-        inline: false
-      }, {
         name: "Votes",
         value: data.vote_count,
+        inline: false
+      }, {
+        name: data.status ? `${entities.decode(data.status_changed_by.name)} set the status to ${entities.decode(data.status.name)}` : `${entities.decode(data.status_changed_by.name)} responded:`,
+        value: (data.response) ? entities.decode(data.response.text).length > 2000 ? '*Content too long, check the feedback website instead.*' : entities.decode(data.response.text) : 'No comment',
         inline: false
       }] : [{
         name: "Votes",
