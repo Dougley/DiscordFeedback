@@ -5,6 +5,8 @@ var commands = []
 var config = require('../../config.js')
 var analytics = require('../../Utils/orwell.js')
 var bugsnag = require('bugsnag')
+const Dash = require('rethinkdbdash')
+const r = new Dash()
 
 bugsnag.register(config.discord.bugsnag)
 
@@ -83,6 +85,49 @@ commands.stats = {
   }
 }
 
+commands['stats-reset'] = {
+  adminOnly: true,
+  modOnly: false,
+  fn: function (bot, msg, suffix) {
+    r.db('DFB').table('analytics').get(suffix).then(data => {
+      if (data !== null) {
+        msg.reply(`you're about to reset the stats for ${suffix}, are you sure?`).then(() => {
+          wait(bot, msg).then(resp => {
+            if (resp === null) {
+              msg.channel.sendMessage('No answer given in time, operation aborted.')
+            }
+            if (resp === false) {
+              msg.channel.sendMessage('Operation aborted.')
+            }
+            if (resp === true) {
+              msg.channel.sendMessage(`Are you **ABSOLUTELY** sure? This can not be undone!`).then(() => {
+                wait(bot, msg).then(resp2 => {
+                  if (resp2 === null) {
+                    msg.channel.sendMessage('No answer given in time, operation aborted.')
+                  }
+                  if (resp2 === false) {
+                    msg.channel.sendMessage('Operation aborted.')
+                  }
+                  if (resp2 === true) {
+                    r.db('DFB').table('analytics').get(suffix).delete().run().then(() => {
+                      msg.channel.sendMessage(`Stats for ${suffix} are deleted.`)
+                    }).catch(e => {
+                      bugsnag.notify(e)
+                      msg.channel.sendMessage(`Failed to delete stats for ${suffix}`)
+                    })
+                  }
+                })
+              })
+            }
+          })
+        })
+      } else {
+        msg.reply(`no data for ${suffix} found.`)
+      }
+    })
+  }
+}
+
 commands.lookup = {
   adminOnly: true,
   modOnly: false,
@@ -112,7 +157,7 @@ commands.lookup = {
           commandsField.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: false
+            inline: true
           })
           if (commandsField.length === 3) break
         }
@@ -156,6 +201,26 @@ commands.shutdown = {
       process.exit(0)
     })
   }
+}
+
+function wait (bot, msg) {
+  let yn = /^y(es)?$|^n(o)?$/i
+  return new Promise((resolve, reject) => {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
+      var time = setTimeout(() => {
+        resolve(null)
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+      }, config.timeouts.duplicateConfirm) // We won't wait forever for the person to anwser
+      if (c.message.channel.id !== msg.channel.id) return
+      if (c.message.author.id !== msg.author.id) return
+      if (c.message.content.match(yn) === null) return
+      else {
+        resolve((c.message.content.match(/^y(es)?/i) !== null))
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+        clearTimeout(time)
+      }
+    })
+  })
 }
 
 exports.Commands = commands
