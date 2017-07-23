@@ -60,13 +60,16 @@ function generateTop (bot, uv) {
                 })
               } else {
                 message.edit('', embed).then(msg => {
-                  r.db('DFB').table('queue').get(msg.id).update({
-                    type: 'upvoteOnly',
-                    UvId: suggestion.id
-                  }).then(() => {
-                    msg.addReaction({
-                      id: '302138464986595339',
-                      name: 'upvote'
+                  r.db('DFB').table('queue').get(msg.id).then(doc => {
+                    if (doc.UvId !== suggestion.id) msg.clearReactions()
+                    r.db('DFB').table('queue').get(msg.id).update({
+                      type: 'upvoteOnly',
+                      UvId: suggestion.id
+                    }).then(() => {
+                      msg.addReaction({
+                        id: '302138464986595339',
+                        name: 'upvote'
+                      })
                     })
                   })
                 })
@@ -84,12 +87,12 @@ function generateEmbed (data) {
   return new Promise(function(resolve, reject) {
     try {
       let embedFields = (data.response) ? [{
-        name: data.status ? `${entities.decode(data.status_changed_by.name)} set the status to ${entities.decode(data.status.name)}` : `${entities.decode(data.status_changed_by.name)} responded:`,
-        value: (data.response) ? entities.decode(data.response.text).length > 2000 ? '*Content too long, check the feedback website instead.*' : entities.decode(data.response.text) : 'No comment',
-        inline: false
-      }, {
         name: "Votes",
         value: data.vote_count,
+        inline: false
+      }, {
+        name: data.status ? `${entities.decode(data.status_changed_by.name)} set the status to ${entities.decode(data.status.name)}` : `${entities.decode(data.status_changed_by.name)} responded:`,
+        value: (data.response) ? entities.decode(data.response.text).length > 2000 ? '*Content too long, check the feedback website instead.*' : entities.decode(data.response.text) : 'No comment',
         inline: false
       }] : [{
         name: "Votes",
@@ -106,9 +109,9 @@ function generateEmbed (data) {
           text: (data.category) ? entities.decode(data.category.name) : 'Uncategorised'
         },
         author: {
-          name: entities.decode(data.creator.name),
-          url: data.creator.url,
-          icon_url: data.creator.avatar_url
+          name: (data.creator) ? entities.decode(data.creator.name) : 'Anonymous',
+          url: (data.creator) ? data.creator.url : undefined,
+          icon_url: (data.creator) ? data.creator.avatar_url : 'https://assets1.uvcdn.com/pkg/admin/icons/user_70-62136f6de7efc58cc79dabcfed799c01.png' // This is the default UV avatar
         },
         fields: embedFields
       })
