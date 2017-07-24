@@ -482,63 +482,74 @@ commands.registerVote = {
         break
       }
       case 'adminReviewDelete': {
-        if (reaction.id === '339171699360661504') {
+        if (reaction.id === '285445175541497859') {
           let deleteID = []
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Entering comment mode for ${doc.UvId}. Please enter your comment now, or type \`cancel\` to cancel.`).then((k) => {
-            deleteID.push(k.id)
-            awaitAny(bot, msg).then((resp, conID) => {
-              deleteID.push(conID)
-              if (resp.toLowerCase() === 'cancel') {
+            deleteID.push(k)
+            awaitAny(bot, user.id, msg.channel.id).then(data => {
+              deleteID.push(data.m)
+              if (data.c.toLowerCase() === 'cancel') {
                 bot.Channels.find(c => c.name === 'admin-queue').sendMessage('Operation cancelled.').then((k) => {
-                  deleteID.push(k.id)
-                  setTimeout(() => bot.Messages.deleteMessages(deleteID, bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+                  deleteID.push(k)
+                  console.log(deleteID)
+                  setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
                 })
-              }
-              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Please confirm, you're about to comment on ${doc.UvId}.\`\`\`${resp}\`\`\``).then((k) => {
-                deleteID.push(k.id)
-                wait(bot, msg).then((cont, ID) => {
-                  deleteID.push(ID)
-                  if (cont === null) {
-                    bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`You took too long to confirm, cancelled.`).then((k) => {
-                      deleteID.push(k.id)
-                      setTimeout(() => bot.Messages.deleteMessages(deleteID, bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-                    })
-                  }
-                  if (cont === false) {
-                    bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Cancelled.`).then((k) => {
-                      deleteID.push(k.id)
-                      setTimeout(() => bot.Messages.deleteMessages(deleteID, bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-                    })
-                  }
-                  if (cont === true) {
-                    getMail(uv, msg.author.id).then(f => {
-                      uv.v1.loginAs(f).then(c => {
-                        c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/comments.json`, {
-                          comment: {
-                            text: resp
-                          }
-                        }).then(data => {
-                          if (data.statusCode === 200) {
-                            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Your comment was added sucessfully.`).then((k) => {
-                              deleteID.push(k.id)
-                              setTimeout(() => bot.Messages.deleteMessages(deleteID, bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
-                            })
-                          } else {
+              } else {
+                bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Please confirm, you're about to comment on ${doc.UvId}.\`\`\`${data.c}\`\`\``).then((k) => {
+                  deleteID.push(k)
+                  waitID(bot, user.id, msg.channel.id).then(data => {
+                    deleteID.push(data.m)
+                    if (data.c === null) {
+                      bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`You took too long to confirm, cancelled.`).then((k) => {
+                        deleteID.push(k)
+                        setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                      })
+                    }
+                    if (data.c === false) {
+                      bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Cancelled.`).then((k) => {
+                        deleteID.push(k)
+                        setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                      })
+                    }
+                    if (data.c === true) {
+                      getMail(uv, user.id).then(f => {
+                        uv.v1.loginAs(f).then(c => {
+                          c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/comments.json`, {
+                            comment: {
+                              text: data.c
+                            }
+                          }).then(data => {
+                            if (data.statusCode === 200) {
+                              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Your comment was added sucessfully.`).then((k) => {
+                                deleteID.push(k)
+                                setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                              })
+                            } else {
+                              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Something went wrong :(`).then((k) => {
+                                deleteID.push(k)
+                                setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                              })
+                              logger.log(bot, {
+                                cause: 'queue_comment',
+                                message: JSON.stringify(data)
+                              })
+                            }
+                          }).catch(data => {
                             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Something went wrong :(`).then((k) => {
-                              deleteID.push(k.id)
-                              setTimeout(() => bot.Messages.deleteMessages(deleteID, bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
+                              deleteID.push(k)
+                              setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
                             })
                             logger.log(bot, {
                               cause: 'queue_comment',
                               message: JSON.stringify(data)
                             })
-                          }
+                          })
                         })
                       })
-                    })
-                  }
+                    }
+                  })
                 })
-              })
+              }
             })
           })
         }
@@ -663,7 +674,7 @@ function switchIDs (og, bot) {
       })
       b.addReaction({
         name: 'thinkBot',
-        íd: '339171699360661504'
+        íd: '285445175541497859'
       })
     }).catch(bugsnag.notify)
   })
@@ -698,7 +709,7 @@ function wait (bot, msg) {
       if (c.message.author.id !== msg.author.id) return
       if (c.message.content.match(yn) === null) return
       else {
-        resolve((c.message.content.match(/^y(es)?/i) !== null), c.message.id)
+        resolve((c.message.content.match(/^y(es)?/i) !== null))
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
         clearTimeout(time)
       }
@@ -706,13 +717,39 @@ function wait (bot, msg) {
   })
 }
 
-function awaitAny (bot, msg) {
+function waitID (bot, user, channel) {
+  let yn = /^y(es)?$|^n(o)?$/i
   return new Promise((resolve, reject) => {
     bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
-      if (c.message.channel.id !== msg.channel.id) return
-      if (c.message.author.id !== msg.author.id) return
+      var time = setTimeout(() => {
+        resolve(null)
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+      }, config.timeouts.duplicateConfirm) // We won't wait forever for the person to anwser
+      if (c.message.channel.id !== channel) return
+      if (c.message.author.id !== user) return
+      if (c.message.content.match(yn) === null) return
       else {
-        resolve(c.message.content, c.message.id)
+        resolve({
+          c: (c.message.content.match(/^y(es)?/i) !== null), 
+          m: c.message
+        })
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+        clearTimeout(time)
+      }
+    })
+  })
+}
+
+function awaitAny (bot, user, channel) {
+  return new Promise((resolve, reject) => {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
+      if (c.message.channel.id !== channel) return
+      if (c.message.author.id !== user) return
+      else {
+        resolve({
+          c: c.message.content,
+          m: c.message
+        })
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
       }
     })
