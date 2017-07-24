@@ -497,21 +497,21 @@ commands.registerVote = {
               } else {
                 bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Please confirm, you're about to comment on ${doc.UvId}.\`\`\`${data.c}\`\`\``).then((k) => {
                   deleteID.push(k)
-                  waitID(bot, user.id, msg.channel.id).then(data => {
-                    deleteID.push(data.m)
-                    if (data.c === null) {
+                  waitID(bot, user.id, msg.channel.id).then(data2 => {
+                    deleteID.push(data2.m)
+                    if (data2.c === null) {
                       bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`You took too long to confirm, cancelled.`).then((k) => {
                         deleteID.push(k)
                         setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
                       })
                     }
-                    if (data.c === false) {
+                    if (data2.c === false) {
                       bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Cancelled.`).then((k) => {
                         deleteID.push(k)
                         setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
                       })
                     }
-                    if (data.c === true) {
+                    if (data2.c === true) {
                       getMail(uv, user.id).then(f => {
                         uv.v1.loginAs(f).then(c => {
                           c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/comments.json`, {
@@ -519,21 +519,10 @@ commands.registerVote = {
                               text: data.c
                             }
                           }).then(data => {
-                            if (data.statusCode === 200) {
-                              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Your comment was added sucessfully.`).then((k) => {
-                                deleteID.push(k)
-                                setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
-                              })
-                            } else {
-                              bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Something went wrong :(`).then((k) => {
-                                deleteID.push(k)
-                                setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
-                              })
-                              logger.log(bot, {
-                                cause: 'queue_comment',
-                                message: JSON.stringify(data)
-                              })
-                            }
+                            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Your comment was added sucessfully.`).then((k) => {
+                              deleteID.push(k)
+                              setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                            })
                           }).catch(data => {
                             bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Something went wrong :(`).then((k) => {
                               deleteID.push(k)
