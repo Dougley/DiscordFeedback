@@ -663,7 +663,7 @@ function switchIDs (og, bot) {
       })
       b.addReaction({
         name: 'thinkBot',
-        íd: '285445175541497859'
+        id: '285445175541497859'
       })
     }).catch(bugsnag.notify)
   })
