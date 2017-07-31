@@ -106,6 +106,12 @@ commands.dupe = {
     } else {
       id2 = parts2[2]
     }
+    if (id2 === null) {
+      msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
+        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+      })
+      return
+    }
     if (id2 == "-"){
       if (dupeMap.has(msg.author.id)){
         id2 = dupeMap.get(msg.author.id);
