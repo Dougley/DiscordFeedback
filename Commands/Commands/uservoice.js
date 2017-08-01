@@ -4,7 +4,7 @@ var commands = []
 var logger = require('../../Utils/error_loggers')
 var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
-var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
+var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
 const entities = new Entities()
 
@@ -244,7 +244,7 @@ commands.url = {
   adminOnly: false,
   modOnly: false,
   fn: function (bot, msg, suffix) {
-    if (suffix.match(`(\d{9})`)[1] !== null) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
+    if (suffix.match(/\d{7,}/)[1]) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
     else msg.reply(`Please enter a Suggestion ID.`)
   }
 }
