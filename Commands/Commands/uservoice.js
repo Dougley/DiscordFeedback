@@ -352,7 +352,11 @@ commands.info = {
               let id = data.users[0].id
               getInfo(id, userid, null)
             }
-          }).catch(() => {}) // Error handled below
+          }).catch(() => {
+            return msg.channel.sendMessage('Failed to find a suitable result using that input.').then(errMsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+            })
+          })
         })
       } else { // OwO UVID is given, try to get dat user ID
         uvClient.v1.loginAsOwner().then(i => {
@@ -360,7 +364,11 @@ commands.info = {
             let avatar = userdata.user.avatar_url
             let id = avatar.match(/https?:\/\/[\w.]+\/avatars\/(\d+)\/.+/) // Grab userid from Avatar URL
             getInfo(uvid, id[1])
-          }).catch(() => {}) // Error handling for this comes later
+          }).catch(() => {
+            return msg.channel.sendMessage('Failed to find a suitable result using that input.').then(errMsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+            })
+          })
         })
       }
     }
