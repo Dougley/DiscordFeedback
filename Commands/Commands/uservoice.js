@@ -351,6 +351,10 @@ commands.info = {
             if (data.users && data.users.length === 1) {
               let id = data.users[0].id
               getInfo(id, userid, null)
+            } else {
+              return msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
+                setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+              })
             }
           }).catch(() => {
             return msg.channel.sendMessage('Failed to find a suitable result using that input.').then(errMsg => {
