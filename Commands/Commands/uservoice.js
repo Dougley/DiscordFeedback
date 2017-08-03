@@ -244,7 +244,7 @@ commands.url = {
   adminOnly: false,
   modOnly: false,
   fn: function (bot, msg, suffix) {
-    if (suffix.match(/\d{7,}/)[1]) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
+    if (suffix.match(/\d{7,}/)[0]) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
     else msg.reply(`Please enter a Suggestion ID.`)
   }
 }
