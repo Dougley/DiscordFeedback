@@ -19,7 +19,7 @@ class Client extends EventEmitter {
   }
 
   login(token) {
-    client.token = token;
+    this.token = token;
     return this.api.gateway.bot.get().then((res) => {
       const gateway = `${res.url}/?v=6&encoding=json`;
       // do ws stuff
