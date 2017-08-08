@@ -48,7 +48,7 @@ module.exports = {
     r.db("DFB").table("analytics").run().then((results) => {
       results.forEach((row) => {
         if (!row || !row.messages || !row.streak) return;
-        let totalDays = row.messages
+        let totalDays = row.messages.length
         let consecutiveDays = row.streak
         let member = guild.members.find(member => member.id === row.id)
         if (!member) return;
