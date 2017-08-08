@@ -1,0 +1,27 @@
+{
+  "name": "megabot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint -c .eslintrc.json src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteamingMutt/DiscordFeedback.git"
+  },
+  "author": "snek <me@gus.host>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SteamingMutt/DiscordFeedback/issues"
+  },
+  "homepage": "https://github.com/SteamingMutt/DiscordFeedback#readme",
+  "dependencies": {
+    "erlpack": "github:hammerandchisel/erlpack",
+    "snekfetch": "^3.2.6",
+    "uws": "^8.14.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.4.1"
+  }
+}
