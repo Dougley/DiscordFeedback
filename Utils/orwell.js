@@ -47,7 +47,8 @@ module.exports = {
   roleUsers: (guild, bot) => {
     r.db("DFB").table("analytics").run().then((results) => {
       results.forEach((row) => {
-        let totalDays = Object.keys(row.messages).length
+        if (!row || !row.messages || !row.streak) return;
+        let totalDays = row.messages
         let consecutiveDays = row.streak
         let member = guild.members.find(member => member.id === row.id)
         if (!member) return;
