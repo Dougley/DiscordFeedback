@@ -23,6 +23,7 @@ module.exports = {
           let difference = today - last
           if (difference === 86400000) { // 1 day difference
             consecutive.push(today.toString())
+            if (consecutive.length > 1 && streak === 0) streak = consecutive.length // backwards compatibility
             if (consecutive.length - streak === 1) { // streak counter is 1 day behind
               streak++
             }
