@@ -18,6 +18,7 @@
   "homepage": "https://feedback.discordapp.com",
   "dependencies": {
     "erlpack": "github:hammerandchisel/erlpack",
+    "promise_util": "^1.0.1",
     "snekfetch": "^3.2.6",
     "uws": "^8.14.1"
   },

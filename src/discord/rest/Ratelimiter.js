@@ -1,6 +1,5 @@
 require('promise_util');
 const request = require('./APIRequest');
-const logger = require('../../util/Logger');
 
 class Ratelimiter {
   constructor(client) {
@@ -74,7 +73,7 @@ class Ratelimiter {
       promise: p,
     });
     this.handle(this.routes[options.route]);
-    p.catch((err) => logger.error('API REQUEST', err.stack));
+    p.catch((err) => console.error('API REQUEST', err.stack));
     return p;
   }
 }
