@@ -121,6 +121,13 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
     bot.Users.fetchMembers() // Hacky way to cache offline users, #blamelazyloading
   }, 600000)
   console.log('Feedback bot is ready!')
+  
+  // Autorole!
+  Analytics.roleUsers(bot.Guilds.get(Config.discord.guild), bot)
+  setInterval(() => {
+    Analytics.roleUsers(bot.Guilds.get(Config.discord.guild), bot)
+  }, 3600000) // once an hour
+
   Commands['initializeTop'].fn(bot, uvClient)
 })
 

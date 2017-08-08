@@ -7,6 +7,7 @@ var analytics = require('../../Utils/orwell.js')
 var bugsnag = require('bugsnag')
 const Dash = require('rethinkdbdash')
 const r = new Dash()
+const roles = require('../../roles')
 
 bugsnag.register(config.discord.bugsnag)
 
@@ -65,11 +66,20 @@ commands.stats = {
           if (commandsField.length === 3) break
         }
       }
-      commandsField.push({
-        name: `Consecutive active days`,
-        value: data.consecutive.length,
-        inline: true
-      })
+      let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
+      let nextRole = sortRoles.find(r => r[1].threshold >= data.consecutive.length)
+      commandsField.push(
+        {
+          name: `Consecutive active days`,
+          value: data.consecutive.length,
+          inline: true
+        },
+        {
+          name: `Days needed for next rank`,
+          value: (nextRole) ? nextRole[1].threshold - data.consecutive.length : 'N/A',
+          inline: true
+        }
+      )
       msg.channel.sendMessage('', false, {
         color: 0x59f442,
         title: `${msg.author.username} - Statistics`,

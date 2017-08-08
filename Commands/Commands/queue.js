@@ -370,6 +370,9 @@ commands.registerVote = {
                     cause: 'chat_vote',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
                   }, e)
+                } else if (e.statusCode === 422) {
+                  // 422 is given when voting is closed, since this is a chat vote we want to avoid sending messages, so we'll just fail silently.
+                  return
                 } else {
                   logger.log(bot, {
                     cause: 'chat_vote_apply',
