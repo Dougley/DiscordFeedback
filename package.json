@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/SteamingMutt/DiscordFeedback/issues"
   },
-  "homepage": "https://github.com/SteamingMutt/DiscordFeedback#readme",
+  "homepage": "https://feedback.discordapp.com",
   "dependencies": {
     "erlpack": "github:hammerandchisel/erlpack",
     "snekfetch": "^3.2.6",
