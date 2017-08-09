@@ -76,6 +76,7 @@ module.exports = {
               })
               if (dates.some(date => date in row.messages)) active = true;
             }
+            console.log(totalDays, consecutiveDays, role.threshold, totalDays && consecutiveDays >= role.threshold)
             if (!active) {
               console.log(`${member.name} isn't considered active`)
               if (member.hasRole(key)) roleWeights.push(role.rank)
