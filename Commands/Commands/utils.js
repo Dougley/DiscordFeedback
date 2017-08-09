@@ -187,7 +187,7 @@ commands.lookup = {
       )
       msg.channel.sendMessage('', false, {
         color: 0x59f442,
-        title: `Statistics for ${member.username}##{member.discriminator}`,
+        title: `Statistics for ${member.username}#${member.discriminator}`,
         thumbnail: {
           url: msg.author.avatarURL
         },
