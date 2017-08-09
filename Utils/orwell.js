@@ -48,7 +48,7 @@ module.exports = {
     r.db("DFB").table("analytics").run().then((results) => {
       results.forEach((row) => {
         if (!row || !row.messages || !row.streak) {
-          throw new Error('[Autorole] Property in row is undefined.')
+          throw new Error(`[Autorole] Property in row is undefined for user ${row.id}.`)
         }
         
         let totalDays = Object.keys(row.messages).length
@@ -64,6 +64,7 @@ module.exports = {
         var roleWeights = [] // array of role weights for every role the user has
 
         Object.entries(roles).forEach(([key, role]) => {
+          console.log(`looping for role id: ${key} (${role.name})`)
           if (member.hasRole(key)) {
             // if user has role, then get all dates in between role.decay and now
             // if user has not interacted in those dates, then they are no longer active
@@ -74,8 +75,10 @@ module.exports = {
               return d.getTime()
             })
             if (dates.some(date => date in row.messages)) active = true;
+            console.log(`${member.name} is active: ${active}`)
           }
 
+          console.log(`Consecutive Days: ${consecutiveDays}, totalDays: ${totalDays}`)
           if (!active) {
             if (member.hasRole(key)) roleWeights.push(role.rank)
           } else if (totalDays && consecutiveDays >= role.threshold) {
