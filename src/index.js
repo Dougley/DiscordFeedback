@@ -1,3 +1,5 @@
+if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production';
+
 const Client = require('./discord').Client;
 const config = require('../config');
 const logger = require('./util/logger');
