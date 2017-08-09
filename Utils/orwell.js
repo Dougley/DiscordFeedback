@@ -60,6 +60,8 @@ module.exports = {
             console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
             continue
           }
+
+          if (member.hasRole('268815351360389121') || member.hasRole('268815286067527690')) continue;
           
           // is the user active?
           let active = false
