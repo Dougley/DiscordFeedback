@@ -54,12 +54,12 @@ commands.stats = {
           if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date].cmds ? true : false
+            inline: dataArr[date] ? (dataArr[date].cmds ? true : false) : false
           })
           if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date].msgs ? true : false
+            inline: dataArr[date] ? (dataArr[date].msgs ? true : false) : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
@@ -160,12 +160,12 @@ commands.lookup = {
           if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date].cmds ? true : false
+            inline: dataArr[date] ? (dataArr[date].cmds ? true : false) : false
           })
           if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date].msgs ? true : false
+            inline: dataArr[date] ? (dataArr[date].msgs ? true : false) : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
