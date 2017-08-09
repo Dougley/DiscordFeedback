@@ -51,15 +51,15 @@ commands.stats = {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do")
-          if (dataArr[date].msgs) field.push({
+          if (data.messages && dataArr[date].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date].cmds ? true : false
+            inline: (data.commands && dataArr[date].cmds) ? true : false
           })
-          if (dataArr[date].cmds) field.push({
+          if (data.commands && dataArr[date].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date].msgs ? true : false
+            inline: (data.messages && dataArr[date].msgs) ? true : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
@@ -141,7 +141,6 @@ commands.lookup = {
   adminOnly: true,
   modOnly: false,
   fn: function (bot, msg, suffix) {
-    msg.channel.sendTyping()
     let moment = require('moment') // forgive me father for i have sinned
     analytics.getPoints((msg.mentions.length !== 0) ? msg.mentions[0].id : suffix).then(data => {
       if (data === null) return msg.reply("couldn't find data on this user.")
@@ -157,16 +156,16 @@ commands.lookup = {
       for (let i in dataArr) {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
-          if (dataArr[date].msgs) field.push({
+          let parsed = moment(parseInt(date)).format("MMM Do")
+          if (data.messages && dataArr[date].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date].cmds ? true : false
+            inline: (data.commands && dataArr[date].cmds) ? true : false
           })
-          if (dataArr[date].cmds) field.push({
+          if (data.commands && dataArr[date].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date].msgs ? true : false
+            inline: (data.messages && dataArr[date].msgs) ? true : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
