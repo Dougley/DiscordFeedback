@@ -42,8 +42,8 @@ commands.stats = {
       let now = new Date()
       let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
       let dataObj = {}
-      Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
-      Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
+      if (data.messages) Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
+      if (data.commands) Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
       let dataArr = Object.entries(dataObj).sort()
       let field = []
 
