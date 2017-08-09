@@ -36,7 +36,6 @@ commands.stats = {
   adminOnly: false,
   modOnly: false,
   fn: function (bot, msg) {
-    msg.channel.sendTyping()
     let moment = require('moment') // forgive me father for i have sinned
     analytics.getPoints(msg.member.id).then(data => {
       if (data === null) return msg.reply("you don't have any stats registered right now.")
@@ -51,7 +50,7 @@ commands.stats = {
       for (let i in dataArr) {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
+          let parsed = moment(parseInt(date)).format("MMM Do")
           if (dataArr[date].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
