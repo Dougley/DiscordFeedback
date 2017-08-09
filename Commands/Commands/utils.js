@@ -51,12 +51,12 @@ commands.stats = {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do")
-          if (data.messages) field.push({
+          if (data.messages && z[i][1].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
             inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
-          if (data.commands) field.push({
+          if (data.commands && z[i][1].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
             inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
@@ -157,12 +157,12 @@ commands.lookup = {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do")
-          if (data.messages) field.push({
+          if (data.messages && z[i][1].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
             inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
-          if (data.commands) field.push({
+          if (data.commands && z[i][1].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
             inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
