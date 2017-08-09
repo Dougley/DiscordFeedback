@@ -27,7 +27,7 @@ class Client extends EventEmitter {
   login(token) {
     this.token = token;
     return this.api.gateway.bot.get().then((res) => {
-      const gateway = `${res.url}/?v=6&encoding=json`;
+      const gateway = `${res.url}/?v=6&encoding=etf`;
       logger.log('GATEWAY DISCOVERY', gateway);
       this.ws.connect(gateway);
     });
