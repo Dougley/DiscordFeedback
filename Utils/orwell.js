@@ -45,76 +45,73 @@ module.exports = {
     })
   },
   roleUsers: (guild, bot) => {
-    r.db("DFB").table("analytics").run().then((results) => {
-      results.forEach((row) => {
-        if (!row || !row.messages || !row.streak) return;
-        
-        let totalDays = Object.keys(row.messages).length
-        let consecutiveDays = row.streak
-        let member = guild.members.find(member => member.id === row.id)
-        if (!member) {
-          return console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
-        }
-        
-        // is the user active?
-        let active = false
-
-        var roleWeights = [] // array of role weights for every role the user has
-
-        Object.entries(roles).forEach(([key, role]) => {
-          console.log(`looping for role id: ${key} (${role.name})`)
-          if (member.hasRole(key)) {
-            // if user has role, then get all dates in between role.decay and now
-            // if user has not interacted in those dates, then they are no longer active
-            let dates = Array.apply(null, new Array(role.decay)).map((v, i) => {
-              var d = new Date();
-              d.setDate(d.getDate() + i + 1 - 7)
-              d.setHours(0,0,0,0)
-              return d.getTime()
-            })
-            if (dates.some(date => date in row.messages)) active = true;
-            console.log(`${member.name} is active: ${active}`)
+    bot.Users.fetchMembers().then(() => {
+      r.db("DFB").table("analytics").run().then((results) => {
+        results.forEach((row) => {
+          if (!row || !row.messages || !row.streak) return;
+          let totalDays = Object.keys(row.messages).length
+          let consecutiveDays = row.streak
+          let member = guild.members.find(member => member.id === row.id)
+          if (!member) {
+            return console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
           }
+          
+          // is the user active?
+          let active = false
 
-          console.log(`Consecutive Days: ${consecutiveDays}, totalDays: ${totalDays}`)
-          if (!active) {
-            if (member.hasRole(key)) roleWeights.push(role.rank)
-          } else if (totalDays && consecutiveDays >= role.threshold) {
-            if (member.hasRole(key)) return
-            console.info(`Giving ${member.name} ${role.name} since they surpassed the threshold`)
-            if (role.message) {
-              member.openDM().then((channel) => {
-                channel.sendMessage(`Hey ${member.name}! ${role.message}`)
+          var roleWeights = [] // array of role weights for every role the user has
+
+          Object.entries(roles).forEach(([key, role]) => {
+            console.log(`looping for role id: ${key} (${role.name})`)
+            if (member.hasRole(key)) {
+              // if user has role, then get all dates in between role.decay and now
+              // if user has not interacted in those dates, then they are no longer active
+              let dates = Array.apply(null, new Array(role.decay)).map((v, i) => {
+                var d = new Date();
+                d.setDate(d.getDate() + i + 1 - 7)
+                d.setHours(0,0,0,0)
+                return d.getTime()
               })
+              if (dates.some(date => date in row.messages)) active = true;
             }
-            member.assignRole(key).then(() => { 
-              genlog.log(bot, bot.User, { 
-                message: `Added ${member.name}#${member.discriminator} to ${role.name}.`
-              })
-            }).catch(console.error)
-            return
-          }
-        })
-
-        if (!active) {
-          if (roleWeights.length === 0) return; // has no roles :c
-          let highest = Math.max.apply(Math, roleWeights)
-          // We can loop again now we know what we're looking for
-          Object.entries(roles).some(([key, role]) => {
-            if (role.rank === highest)  {
-              member.unassignRole(key).then(() => {
-                genlog.log(bot, bot.User, { 
-                  message: `Removed ${role.name} from ${member.name}#${member.discriminator}.`
-                })
+            if (!active) {
+              if (member.hasRole(key)) roleWeights.push(role.rank)
+            } else if (totalDays && consecutiveDays >= role.threshold) {
+              if (member.hasRole(key)) return
+              console.info(`Giving ${member.name} ${role.name} since they surpassed the threshold`)
+              if (role.message) {
                 member.openDM().then((channel) => {
-                  channel.sendMessage(`Hey ${member.name}! Looks like you haven't been active in the Discord Feedback server for a while. As a result, you've lost your current role of ${role.name}. Don't worry though, you can absolutely earn your old role back! Just starting chatting and using the bot once per day!`)
+                  channel.sendMessage(`Hey ${member.name}! ${role.message}`)
                 })
-              })
-              return true
+              }
+              member.assignRole(key).then(() => { 
+                genlog.log(bot, bot.User, { 
+                  message: `Added ${member.name}#${member.discriminator} to ${role.name}.`
+                })
+              }).catch(console.error)
+              return
             }
           })
-        }
 
+          if (!active) {
+            if (roleWeights.length === 0) return; // has no roles :c
+            let highest = Math.max.apply(Math, roleWeights)
+            // We can loop again now we know what we're looking for
+            Object.entries(roles).some(([key, role]) => {
+              if (role.rank === highest)  {
+                member.unassignRole(key).then(() => {
+                  genlog.log(bot, bot.User, { 
+                    message: `Removed ${role.name} from ${member.name}#${member.discriminator}.`
+                  })
+                  member.openDM().then((channel) => {
+                    channel.sendMessage(`Hey ${member.name}! Looks like you haven't been active in the Discord Feedback server for a while. As a result, you've lost your current role of ${role.name}. Don't worry though, you can absolutely earn your old role back! Just starting chatting and using the bot once per day!`)
+                  })
+                })
+                return true
+              }
+            })
+          }
+        })
       })
     })
   }
