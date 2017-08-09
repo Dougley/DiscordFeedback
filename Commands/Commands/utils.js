@@ -59,7 +59,7 @@ commands.stats = {
           if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[i] ? (dataArr[i][i].msgs ? true : false) : false
+            inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
