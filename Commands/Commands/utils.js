@@ -51,15 +51,15 @@ commands.stats = {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do")
-          if (data.messages && dataArr[date].msgs) field.push({
+          if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: (data.commands && dataArr[date].cmds) ? true : false
+            inline: dataArr[date].cmds ? true : false
           })
-          if (data.commands && dataArr[date].cmds) field.push({
+          if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: (data.messages && dataArr[date].msgs) ? true : false
+            inline: dataArr[date].msgs ? true : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
@@ -157,15 +157,15 @@ commands.lookup = {
         let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
           let parsed = moment(parseInt(date)).format("MMM Do")
-          if (data.messages && dataArr[date].msgs) field.push({
+          if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: (data.commands && dataArr[date].cmds) ? true : false
+            inline: dataArr[date].cmds ? true : false
           })
-          if (data.commands && dataArr[date].cmds) field.push({
+          if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: (data.messages && dataArr[date].msgs) ? true : false
+            inline: dataArr[date].msgs ? true : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
