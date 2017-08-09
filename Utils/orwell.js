@@ -50,14 +50,15 @@ module.exports = {
     bot.Users.fetchMembers().then(() => {
       r.db("DFB").table("analytics").run().then((results) => {
         console.log(`found ${results.length} records`)
-        results.forEach((row) => {
-          console.log('now looping for hit', x++)
-          if (!row || !row.messages || !row.streak) return;
+        for (const row of results) {
+
+          if (!row || !row.messages || !row.streak && row.streak !== 0) continue;
           let totalDays = Object.keys(row.messages).length
           let consecutiveDays = row.streak
           let member = guild.members.find(member => member.id === row.id)
           if (!member) {
-            return console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
+            console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
+            continue
           }
           
           // is the user active?
@@ -67,7 +68,7 @@ module.exports = {
 
           Object.entries(roles).forEach(([key, role]) => {
             console.log(`looping for role id: ${key} (${role.name}) on member ${member.name}`)
-            if (member.hasRole(key)) {
+            if (member.hasRole(key) || role.threshold === 3) {
               // if user has role, then get all dates in between role.decay and now
               // if user has not interacted in those dates, then they are no longer active
               let dates = Array.apply(null, new Array(role.decay)).map((v, i) => {
@@ -77,12 +78,9 @@ module.exports = {
                 return d.getTime()
               })
               if (dates.some(date => date in row.messages)) active = true;
-            }
+            } 
             console.log(totalDays, consecutiveDays, role.threshold, totalDays && consecutiveDays >= role.threshold)
-            if (!active) {
-              console.log(`${member.name} isn't considered active`)
-              if (member.hasRole(key)) roleWeights.push(role.rank)
-            } else if (totalDays && consecutiveDays >= role.threshold) {
+            if (totalDays && consecutiveDays >= role.threshold) {
               if (member.hasRole(key)) return
               console.info(`Giving ${member.name} ${role.name} since they surpassed the threshold`)
               if (role.message) {
@@ -96,7 +94,10 @@ module.exports = {
                 })
               }).catch(console.error)
               return
-            }
+            } else if (!active) {
+              console.log(`${member.name} isn't considered active`)
+              if (member.hasRole(key)) roleWeights.push(role.rank)
+            }  
           })
 
           if (!active) {
@@ -117,7 +118,7 @@ module.exports = {
               }
             })
           }
-        })
+        }
       })
     })
     console.log('considered done, looped approx. ' + x + ' times')
