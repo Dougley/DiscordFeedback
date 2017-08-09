@@ -47,7 +47,9 @@ module.exports = {
   roleUsers: (guild, bot) => {
     bot.Users.fetchMembers().then(() => {
       r.db("DFB").table("analytics").run().then((results) => {
+        console.log(`found ${results.length} records`)
         results.forEach((row) => {
+          console.log(require('util').inspect(row))
           if (!row || !row.messages || !row.streak) return;
           let totalDays = Object.keys(row.messages).length
           let consecutiveDays = row.streak
@@ -62,7 +64,7 @@ module.exports = {
           var roleWeights = [] // array of role weights for every role the user has
 
           Object.entries(roles).forEach(([key, role]) => {
-            console.log(`looping for role id: ${key} (${role.name})`)
+            console.log(`looping for role id: ${key} (${role.name}) on member ${member.name}`)
             if (member.hasRole(key)) {
               // if user has role, then get all dates in between role.decay and now
               // if user has not interacted in those dates, then they are no longer active
@@ -75,6 +77,7 @@ module.exports = {
               if (dates.some(date => date in row.messages)) active = true;
             }
             if (!active) {
+              console.log(`${member.name} isn't considered active`)
               if (member.hasRole(key)) roleWeights.push(role.rank)
             } else if (totalDays && consecutiveDays >= role.threshold) {
               if (member.hasRole(key)) return
