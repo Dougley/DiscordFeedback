@@ -1,17 +1,23 @@
 const EventEmitter = require('events');
 const Collection = require('../util/Collection');
 const Router = require('./rest/Router');
+const WebSocketConnection = require('./WebSocketConnection');
+const logger = require('../util/logger');
 
 class Client extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super();
+    this.options = options;
 
+    this.users = new Collection();
     this.channels = new Collection();
     this.roles = new Collection();
     this.members = new Collection();
     this.emojis = new Collection();
 
     this.rest = new Router(this);
+
+    this.ws = new WebSocketConnection(this);
   }
 
   get api() {
@@ -22,7 +28,8 @@ class Client extends EventEmitter {
     this.token = token;
     return this.api.gateway.bot.get().then((res) => {
       const gateway = `${res.url}/?v=6&encoding=json`;
-      // do ws stuff
+      logger.log('GATEWAY DISCOVERY', gateway);
+      this.ws.connect(gateway);
     });
   }
 }

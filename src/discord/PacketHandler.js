@@ -1,9 +1,9 @@
 const Constants = require('../Constants');
 
-function handle(client, ws, packet) { // eslint-disable-line complexity
+function handle(client, packet) { // eslint-disable-line complexity
   switch (packet.t) {
     case 'READY':
-      for (const guild of packet.d.guilds) handle(client, ws, { t: 'GUILD_CREATE', d: guild });
+      for (const guild of packet.d.guilds) handle(client, { t: 'GUILD_CREATE', d: guild });
       return packet.d;
     case 'GUILD_CREATE':
       if (packet.d.id !== Constants.ROOT_GUILD) return;
@@ -15,16 +15,13 @@ function handle(client, ws, packet) { // eslint-disable-line complexity
         client.roles.set(role.id, role);
       }
       for (const member of packet.d.members) {
-        const user = member.user;
-        delete member.user;
-        client.members.set(user.id, member);
-        client.users.set(user.id, user);
+        handle(client, { t: 'GUILD_MEMBER_ADD', d: member });
       }
       for (const channel of packet.d.channels) {
-        handle(client, ws, { t: 'CHANNEL_CREATE', d: channel });
+        handle(client, { t: 'CHANNEL_CREATE', d: channel });
       }
       for (const emoji of packet.d.emojis) {
-        handle(client, ws, { t: 'EMOJI_CREATE', d: emoji });
+        handle(client, { t: 'EMOJI_CREATE', d: emoji });
       }
       return client;
     case 'GUILD_UPDATE': {
@@ -44,22 +41,23 @@ function handle(client, ws, packet) { // eslint-disable-line complexity
       }
       return client;
     }
+    case 'GUILD_MEMBER_ADD': {
+      const member = packet.d;
+      const user = member.user;
+      delete member.user;
+      client.users.set(user.id, user);
+      return client.members.set(user.id, member);
+    }
     case 'GUILD_MEMBER_UPDATE': {
       const member = client.members.get(packet.d.user.id);
       if (!member) return;
       member.nick = packet.d.nick;
       return member;
     }
-    case 'GUILD_MEMBER_ADD': {
-      const guild = client.guilds[packet.d.guild_id];
-      if (!guild || !guild.members) return;
-      return guild.members[packet.d.user.id] = { nick: packet.d.nick };
-    }
     case 'GUILD_MEMBER_REMOVE': {
-      const guild = client.guilds[packet.d.guild_id];
-      if (!guild || !guild.members) return;
-      const member = guild.members[packet.d.user.id];
-      delete guild.members[packet.d.user.id];
+      const member = client.members.get(packet.d.user.id);
+      if (!member) return false;
+      client.members.delete(packet.d.user.id);
       return member;
     }
     case 'CHANNEL_CREATE': {
@@ -91,6 +89,9 @@ function handle(client, ws, packet) { // eslint-disable-line complexity
     case 'MESSAGE_CREATE':
       return packet.d;
       // return new Message(client, packet.d);
+    case 'MESSAGE_REACTION_ADD':
+    case 'MESSAGE_REACTION_REMOVE':
+      return packet.d;
     default:
       return false;
   }
