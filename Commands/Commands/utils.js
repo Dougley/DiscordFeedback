@@ -54,12 +54,12 @@ commands.stats = {
           if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date] ? (dataArr[date].cmds ? true : false) : false
+            inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
           if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date] ? (dataArr[date].msgs ? true : false) : false
+            inline: dataArr[i] ? (dataArr[i][i].msgs ? true : false) : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
@@ -86,7 +86,7 @@ commands.stats = {
           url: msg.author.avatarURL
         },
         fields: field
-      })
+      }).catch(bugsnag.notify)
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
       console.error(e)
@@ -148,8 +148,8 @@ commands.lookup = {
       let now = new Date()
       let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
       let dataObj = {}
-      Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
-      Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
+      if (data.messages) Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
+      if (data.commands) Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
       let dataArr = Object.entries(dataObj).sort()
       let field = []
 
@@ -160,12 +160,12 @@ commands.lookup = {
           if (data.messages) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: dataArr[date] ? (dataArr[date].cmds ? true : false) : false
+            inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
           if (data.commands) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: dataArr[date] ? (dataArr[date].msgs ? true : false) : false
+            inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
         }
         // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
