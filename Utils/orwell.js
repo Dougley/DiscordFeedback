@@ -47,15 +47,13 @@ module.exports = {
   roleUsers: (guild, bot) => {
     r.db("DFB").table("analytics").run().then((results) => {
       results.forEach((row) => {
-        if (!row || !row.messages || !row.streak) {
-          throw new Error(`[Autorole] Property in row is undefined for user ${row.id}.`)
-        }
+        if (!row || !row.messages || !row.streak) return;
         
         let totalDays = Object.keys(row.messages).length
         let consecutiveDays = row.streak
         let member = guild.members.find(member => member.id === row.id)
         if (!member) {
-          throw new Error(`[Autorole] Couldn't find member with ID ${row.id}.`)
+          console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
         }
         
         // is the user active?
@@ -93,9 +91,7 @@ module.exports = {
               genlog.log(bot, bot.User, { 
                 message: `Added ${member.name}#${member.discriminator} to ${role.name}.`
               })
-            }).catch(err => {
-              throw new Error(err)
-            })
+            }).catch(console.error)
             return
           }
         })
