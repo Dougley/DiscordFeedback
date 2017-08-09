@@ -1,4 +1,5 @@
-const Constants = require('../Constants');
+const ROOT_GUILD = require('../../config.json').discord.root_guild;
+const Message = require('./structures/Message');
 
 function handle(client, packet) { // eslint-disable-line complexity
   switch (packet.t) {
@@ -6,7 +7,7 @@ function handle(client, packet) { // eslint-disable-line complexity
       for (const guild of packet.d.guilds) handle(client, { t: 'GUILD_CREATE', d: guild });
       return packet.d;
     case 'GUILD_CREATE':
-      if (packet.d.id !== Constants.ROOT_GUILD) return;
+      if (packet.d.id !== ROOT_GUILD) return;
       if (packet.d.unavailable) {
         // shit shit shit shit shit
         return false;
@@ -25,14 +26,14 @@ function handle(client, packet) { // eslint-disable-line complexity
       }
       return client;
     case 'GUILD_UPDATE': {
-      if (packet.d.id !== Constants.ROOT_GUILD) return;
+      if (packet.d.id !== ROOT_GUILD) return;
       return false;
       // const n = packet.d;
       // // if (Reflect.has(n, 'name')) guild.name = n.name;
       // return guild;
     }
     case 'GUILD_DELETE': {
-      if (packet.d.id !== Constants.ROOT_GUILD) return;
+      if (packet.d.id !== ROOT_GUILD) return;
       if (packet.d.unavailable) {
         client.unavailable = true;
       } else {
@@ -87,8 +88,7 @@ function handle(client, packet) { // eslint-disable-line complexity
       return client.channels.delete(packet.d.id) && channel;
     }
     case 'MESSAGE_CREATE':
-      return packet.d;
-      // return new Message(client, packet.d);
+      return new Message(client, packet.d);
     case 'MESSAGE_REACTION_ADD':
     case 'MESSAGE_REACTION_REMOVE':
       return packet.d;

@@ -73,7 +73,6 @@ class Ratelimiter {
       promise: p,
     });
     this.handle(this.routes[options.route]);
-    p.catch((err) => console.error('API REQUEST', err.stack));
     return p;
   }
 }

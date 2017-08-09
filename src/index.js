@@ -5,7 +5,7 @@ const logger = require('./util/logger');
 const client = new Client();
 
 client.on('MESSAGE_CREATE', (message) => {
-  logger.log('MESSAGE', message);
+  logger.log('MESSAGE', message.react.deny(1000));
 });
 
 client.on('MESSAGE_REACTION_ADD', (x) => {
