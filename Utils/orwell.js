@@ -3,6 +3,8 @@ const r = new Dash()
 const roles = require('../roles')
 const genlog = require('./generic_logger')
 
+let x = 0
+
 module.exports = {
   awardPoints: (user, type) => {
     return new Promise((resolve, reject) => {
@@ -49,7 +51,7 @@ module.exports = {
       r.db("DFB").table("analytics").run().then((results) => {
         console.log(`found ${results.length} records`)
         results.forEach((row) => {
-          console.log(require('util').inspect(row))
+          console.log('now looping for hit', x++)
           if (!row || !row.messages || !row.streak) return;
           let totalDays = Object.keys(row.messages).length
           let consecutiveDays = row.streak
