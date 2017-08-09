@@ -53,7 +53,7 @@ module.exports = {
         let consecutiveDays = row.streak
         let member = guild.members.find(member => member.id === row.id)
         if (!member) {
-          console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
+          return console.error(`[Autorole] Couldn't find member with ID ${row.id}.`)
         }
         
         // is the user active?
