@@ -83,7 +83,7 @@ commands.stats = {
         color: 0x59f442,
         title: `${msg.author.username} - Statistics`,
         thumbnail: {
-          url: msg.author.avatarURL
+          url: msg.author.staticAvatarURL
         },
         fields: field
       }).catch(bugsnag.notify)
@@ -189,7 +189,7 @@ commands.lookup = {
         color: 0x59f442,
         title: `Statistics for ${member.username}#${member.discriminator}`,
         thumbnail: {
-          url: msg.author.avatarURL
+          url: member.staticAvatarURL
         },
         fields: field
       })
