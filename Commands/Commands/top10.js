@@ -9,6 +9,7 @@ var commands = []
 commands.initializeTop = {
   internal: true,
   fn: function (bot, uv) {
+    generateTop(bot, uv)
     setInterval(() => generateTop(bot, uv), 3600000) // update the top 10 hourly
   }
 }

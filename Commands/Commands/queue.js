@@ -106,6 +106,12 @@ commands.dupe = {
     } else {
       id2 = parts2[2]
     }
+    if (id2 === null) {
+      msg.reply("you're missing parameters, please review <#268812893087203338>").then(errmsg => {
+        setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+      })
+      return
+    }
     if (id2 == "-"){
       if (dupeMap.has(msg.author.id)){
         id2 = dupeMap.get(msg.author.id);
@@ -353,10 +359,17 @@ commands.registerVote = {
                   msg.addReaction({
                     id: '296752137935912960',
                     name: 'f1'
-                  }).then(setTimeout(() => msg.removeReaction({
-                    id: '296752137935912960',
-                    name: 'f1'
-                  }), 2500))
+                  }).then(setTimeout(() => {
+                    msg.fetchReactions({
+                      id: '296752137935912960',
+                      name: 'f1'
+                    }).then(users => {
+                      users.map(user => msg.removeReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }, user.id))
+                    })
+                  }, 2500))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
@@ -364,6 +377,9 @@ commands.registerVote = {
                     cause: 'chat_vote',
                     message: (e.message !== undefined) ? e.message : JSON.stringify(e)
                   }, e)
+                } else if (e.statusCode === 422) {
+                  // 422 is given when voting is closed, since this is a chat vote we want to avoid sending messages, so we'll just fail silently.
+                  return
                 } else {
                   logger.log(bot, {
                     cause: 'chat_vote_apply',
@@ -438,10 +454,17 @@ commands.registerVote = {
                   msg.addReaction({
                     id: '296752137935912960',
                     name: 'f1'
-                  }).then(setTimeout(() => msg.removeReaction({
-                    id: '296752137935912960',
-                    name: 'f1'
-                  }), 2500))
+                  }).then(setTimeout(() => {
+                    msg.fetchReactions({
+                      id: '296752137935912960',
+                      name: 'f1'
+                    }).then(users => {
+                      users.map(user => msg.removeReaction({
+                        id: '296752137935912960',
+                        name: 'f1'
+                      }, user.id))
+                    })
+                  }, 2500))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
@@ -482,6 +505,66 @@ commands.registerVote = {
         break
       }
       case 'adminReviewDelete': {
+        if (reaction.id === '285445175541497859') {
+          let deleteID = []
+          bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Entering comment mode for ${doc.UvId}. Please enter your comment now, or type \`cancel\` to cancel.`).then((k) => {
+            deleteID.push(k)
+            awaitAny(bot, user.id, msg.channel.id).then(data => {
+              deleteID.push(data.m)
+              if (data.c.toLowerCase() === 'cancel') {
+                bot.Channels.find(c => c.name === 'admin-queue').sendMessage('Operation cancelled.').then((k) => {
+                  deleteID.push(k)
+                  console.log(deleteID)
+                  setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                })
+              } else {
+                bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Please confirm, you're about to comment on ${doc.UvId}.\`\`\`${data.c}\`\`\``).then((k) => {
+                  deleteID.push(k)
+                  waitID(bot, user.id, msg.channel.id).then(data2 => {
+                    deleteID.push(data2.m)
+                    if (data2.c === null) {
+                      bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`You took too long to confirm, cancelled.`).then((k) => {
+                        deleteID.push(k)
+                        setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                      })
+                    }
+                    if (data2.c === false) {
+                      bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Cancelled.`).then((k) => {
+                        deleteID.push(k)
+                        setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                      })
+                    }
+                    if (data2.c === true) {
+                      getMail(uv, user.id).then(f => {
+                        uv.v1.loginAs(f).then(c => {
+                          c.post(`forums/${config.uservoice.forumId}/suggestions/${doc.UvId}/comments.json`, {
+                            comment: {
+                              text: data.c
+                            }
+                          }).then(data => {
+                            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Your comment was added sucessfully.`).then((k) => {
+                              deleteID.push(k)
+                              setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                            })
+                          }).catch(data => {
+                            bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`Something went wrong :(`).then((k) => {
+                              deleteID.push(k)
+                              setTimeout(() => deleteID.map(o => o.delete()), config.timeouts.messageDelete)
+                            })
+                            logger.log(bot, {
+                              cause: 'queue_comment',
+                              message: JSON.stringify(data)
+                            })
+                          })
+                        })
+                      })
+                    }
+                  })
+                })
+              }
+            })
+          })
+        }
         if (reaction.id === '302137375113609219') {
           genlog.log(bot, user, {
             message: 'Dismissed a report',
@@ -601,6 +684,10 @@ function switchIDs (og, bot) {
         name: 'deny',
         id: '302137375113609219'
       })
+      b.addReaction({
+        name: 'thinkBot',
+        id: '285445175541497859'
+      })
     }).catch(bugsnag.notify)
   })
 }
@@ -637,6 +724,45 @@ function wait (bot, msg) {
         resolve((c.message.content.match(/^y(es)?/i) !== null))
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
         clearTimeout(time)
+      }
+    })
+  })
+}
+
+function waitID (bot, user, channel) {
+  let yn = /^y(es)?$|^n(o)?$/i
+  return new Promise((resolve, reject) => {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
+      var time = setTimeout(() => {
+        resolve(null)
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+      }, config.timeouts.duplicateConfirm) // We won't wait forever for the person to anwser
+      if (c.message.channel.id !== channel) return
+      if (c.message.author.id !== user) return
+      if (c.message.content.match(yn) === null) return
+      else {
+        resolve({
+          c: (c.message.content.match(/^y(es)?/i) !== null), 
+          m: c.message
+        })
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
+        clearTimeout(time)
+      }
+    })
+  })
+}
+
+function awaitAny (bot, user, channel) {
+  return new Promise((resolve, reject) => {
+    bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
+      if (c.message.channel.id !== channel) return
+      if (c.message.author.id !== user) return
+      else {
+        resolve({
+          c: c.message.content,
+          m: c.message
+        })
+        bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
       }
     })
   })

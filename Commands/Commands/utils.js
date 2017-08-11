@@ -7,6 +7,7 @@ var analytics = require('../../Utils/orwell.js')
 var bugsnag = require('bugsnag')
 const Dash = require('rethinkdbdash')
 const r = new Dash()
+const roles = require('../../roles')
 
 bugsnag.register(config.discord.bugsnag)
 
@@ -35,49 +36,57 @@ commands.stats = {
   adminOnly: false,
   modOnly: false,
   fn: function (bot, msg) {
-    msg.channel.sendTyping()
     let moment = require('moment') // forgive me father for i have sinned
     analytics.getPoints(msg.member.id).then(data => {
       if (data === null) return msg.reply("you don't have any stats registered right now.")
       let now = new Date()
       let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
-      let messagesField = []
-      let commandsField = []
-      for (let date in data.messages) {
+      let dataObj = {}
+      if (data.messages) Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
+      if (data.commands) Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
+      let dataArr = Object.entries(dataObj).sort()
+      let field = []
+
+      for (let i in dataArr) {
+        let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
-          messagesField.push({
+          let parsed = moment(parseInt(date)).format("MMM Do")
+          if (data.messages && dataArr[i][1].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: true
+            inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
-        }
-        if (messagesField.length === 3) break
-      }
-      for (let date in data.commands) {
-        if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
-          commandsField.push({
+          if (data.commands && dataArr[i][1].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: false
+            inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
-          if (commandsField.length === 3) break
         }
+        // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
       }
-      commandsField.push({
-        name: `Consecutive active days`,
-        value: data.consecutive.length,
-        inline: true
-      })
+
+      let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
+      let nextRole = sortRoles.find(r => r[1].threshold > data.consecutive.length)
+      field.push(
+        {
+          name: `Consecutive active days`,
+          value: data.consecutive.length,
+          inline: true
+        },
+        {
+          name: `Days needed for next rank`,
+          value: (nextRole) ? nextRole[1].threshold - data.consecutive.length : 'N/A',
+          inline: true
+        }
+      )
       msg.channel.sendMessage('', false, {
         color: 0x59f442,
         title: `${msg.author.username} - Statistics`,
         thumbnail: {
-          url: msg.author.avatarURL
+          url: msg.author.staticAvatarURL
         },
-        fields: messagesField.concat(commandsField)
-      })
+        fields: field
+      }).catch(bugsnag.notify)
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
       console.error(e)
@@ -132,45 +141,57 @@ commands.lookup = {
   adminOnly: true,
   modOnly: false,
   fn: function (bot, msg, suffix) {
-    msg.channel.sendTyping()
     let moment = require('moment') // forgive me father for i have sinned
     analytics.getPoints((msg.mentions.length !== 0) ? msg.mentions[0].id : suffix).then(data => {
       if (data === null) return msg.reply("couldn't find data on this user.")
+      let member = msg.guild.members.find(member => member.id === data.id)
       let now = new Date()
       let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
-      let messagesField = []
-      let commandsField = []
-      for (let date in data.messages) {
+      let dataObj = {}
+      if (data.messages) Object.entries(data.messages).forEach(m => dataObj[m[0]] ? Object.assign(dataObj[m[0]], { msgs: m[1] }) : dataObj[m[0]] = { msgs: m[1] })
+      if (data.commands) Object.entries(data.commands).forEach(c => dataObj[c[0]] ? Object.assign(dataObj[c[0]], { cmds: c[1] }) : dataObj[c[0]] = { cmds: c[1] })
+      let dataArr = Object.entries(dataObj).sort()
+      let field = []
+
+      for (let i in dataArr) {
+        let date = dataArr[i][0]
         if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
-          messagesField.push({
+          let parsed = moment(parseInt(date)).format("MMM Do")
+          if (data.messages && dataArr[i][1].msgs) field.push({
             name: `Messages on ${parsed}`,
             value: data.messages[date],
-            inline: true
+            inline: dataArr[i] ? (dataArr[i][1].cmds ? true : false) : false
           })
-        }
-        if (messagesField.length === 3) break
-      }
-      for (let date in data.commands) {
-        if (today - parseInt(date) <= 172800000) {
-          let parsed = moment(parseInt(date)).format("MMM Do YYYY")
-          commandsField.push({
+          if (data.commands && dataArr[i][1].cmds) field.push({
             name: `Commands on ${parsed}`,
             value: data.commands[date],
-            inline: true
+            inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
-          if (commandsField.length === 3) break
         }
+        // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
       }
-      commandsField.push({
-        name: `Consecutive active days`,
-        value: data.consecutive.length,
-        inline: false
-      })
+
+      let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
+      let nextRole = sortRoles.find(r => r[1].threshold > data.consecutive.length)
+      field.push(
+        {
+          name: `Consecutive active days`,
+          value: data.consecutive.length,
+          inline: true
+        },
+        {
+          name: `Days needed for next rank`,
+          value: (nextRole) ? nextRole[1].threshold - data.consecutive.length : 'N/A',
+          inline: true
+        }
+      )
       msg.channel.sendMessage('', false, {
         color: 0x59f442,
-        title: `Statistics for ${suffix}`,
-        fields: messagesField.concat(commandsField)
+        title: `Statistics for ${member.username}#${member.discriminator}`,
+        thumbnail: {
+          url: member.staticAvatarURL
+        },
+        fields: field
       })
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')

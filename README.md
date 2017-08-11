@@ -6,7 +6,7 @@ We don't (fully) support hosting your own copy of DiscordFeedback, this program 
 
 However, if you do want to run an instance, you need the following:
 
-- UserVoice API keys
+- UserVoice API keys, these **must** be marked as "Trusted" inside the admin panel.
 - Discord bot account
 - [RethinkDB](https://www.rethinkdb.com)
 - Discord server (duh)

@@ -51,4 +51,7 @@ test.js
 # Channel config
 channels.js
 
+# Roles config
+roles.js
+
 dump.json

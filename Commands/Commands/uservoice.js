@@ -4,7 +4,7 @@ var commands = []
 var logger = require('../../Utils/error_loggers')
 var config = require('../../config.js')
 var Entities = require('html-entities').AllHtmlEntities
-var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
+var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
 const entities = new Entities()
 
@@ -240,6 +240,15 @@ commands.comment = {
     })
   }
 }
+commands.url = {
+  adminOnly: false,
+  modOnly: false,
+  fn: function (bot, msg, suffix) {
+    let id = suffix.match(/\d{7,}/)[0]
+    if (id) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
+    else msg.reply(`Please enter a Suggestion ID.`)
+  }
+}
 
 commands.info = {
   modOnly: false,
@@ -343,8 +352,16 @@ commands.info = {
             if (data.users && data.users.length === 1) {
               let id = data.users[0].id
               getInfo(id, userid, null)
+            } else {
+              return msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
+                setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+              })
             }
-          }).catch(() => {}) // Error handled below
+          }).catch(() => {
+            return msg.channel.sendMessage('Failed to find a suitable result using that input.').then(errMsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+            })
+          })
         })
       } else { // OwO UVID is given, try to get dat user ID
         uvClient.v1.loginAsOwner().then(i => {
@@ -352,7 +369,11 @@ commands.info = {
             let avatar = userdata.user.avatar_url
             let id = avatar.match(/https?:\/\/[\w.]+\/avatars\/(\d+)\/.+/) // Grab userid from Avatar URL
             getInfo(uvid, id[1])
-          }).catch(() => {}) // Error handling for this comes later
+          }).catch(() => {
+            return msg.channel.sendMessage('Failed to find a suitable result using that input.').then(errMsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)
+            })
+          })
         })
       }
     }
