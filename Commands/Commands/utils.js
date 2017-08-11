@@ -78,14 +78,16 @@ commands.stats = {
           inline: true
         }
       )
-      msg.channel.openDM('', false, {
-        color: 0x59f442,
-        title: `${msg.author.username} - Statistics`,
-        thumbnail: {
-          url: msg.author.staticAvatarURL
-        },
-        fields: field
-      }).catch(bugsnag.notify)
+      msg.channel.openDM().then((e) => {
+        e.sendMessage('', false, {
+          color: 0x59f442,
+          title: `${msg.author.username} - Statistics`,
+          thumbnail: {
+            url: msg.author.staticAvatarURL
+          },
+          fields: field
+        }).catch(bugsnag.notify) // Send Message to DM error
+      }).catch(bugsnag.notify) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
       console.error(e)
