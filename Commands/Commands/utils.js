@@ -87,6 +87,8 @@ commands.stats = {
           },
           fields: field
         }).catch(bugsnag.notify) // Send Message to DM error
+      }).then(successmsg => {
+        setTimeout(() => bot.Messages.deleteMessages([msg]), config.timeouts.messageDelete)
       }).catch(bugsnag.notify) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
