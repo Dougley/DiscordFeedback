@@ -78,7 +78,7 @@ commands.stats = {
           inline: true
         }
       )
-      msg.channel.openDM().then((e) => {
+      msg.author.openDM().then((e) => {
         e.sendMessage('', false, {
           color: 0x59f442,
           title: `${msg.author.username} - Statistics`,
@@ -87,6 +87,8 @@ commands.stats = {
           },
           fields: field
         }).catch(bugsnag.notify) // Send Message to DM error
+      }).then(successmsg => {
+        setTimeout(() => bot.Messages.deleteMessages([msg]), config.timeouts.messageDelete)
       }).catch(bugsnag.notify) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
