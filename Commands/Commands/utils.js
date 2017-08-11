@@ -78,7 +78,7 @@ commands.stats = {
           inline: true
         }
       )
-      msg.channel.openDM().then((e) => {
+      msg.author.openDM().then((e) => {
         e.sendMessage('', false, {
           color: 0x59f442,
           title: `${msg.author.username} - Statistics`,
