@@ -62,7 +62,6 @@ commands.stats = {
             inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
         }
-        // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
       }
 
       let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
