@@ -1,6 +1,6 @@
 {
   "name": "discord-feedback",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Bot for the Discord Feedback server",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,9 @@
   },
   "maintainers": [
     {
-      "name": "Benjamin Hoffmeyer (TheDoctorsLife)"
+      "name": "Benjamin Hoffmeyer (TheDoctorsLife)",
+      "email": "admin@doc.tors.life",
+      "url": "https://doc.tors.life"
     }
   ],
   "author": "Remco Jongschaap <hello@dougley.com>",
