@@ -62,7 +62,6 @@ commands.stats = {
             inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
         }
-        // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
       }
 
       let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
@@ -79,14 +78,16 @@ commands.stats = {
           inline: true
         }
       )
-      msg.channel.sendMessage('', false, {
-        color: 0x59f442,
-        title: `${msg.author.username} - Statistics`,
-        thumbnail: {
-          url: msg.author.staticAvatarURL
-        },
-        fields: field
-      }).catch(bugsnag.notify)
+      msg.channel.openDM().then((e) => {
+        e.sendMessage('', false, {
+          color: 0x59f442,
+          title: `${msg.author.username} - Statistics`,
+          thumbnail: {
+            url: msg.author.staticAvatarURL
+          },
+          fields: field
+        }).catch(bugsnag.notify) // Send Message to DM error
+      }).catch(bugsnag.notify) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
       console.error(e)
