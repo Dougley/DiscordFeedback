@@ -123,6 +123,5 @@ module.exports = {
         }
       })
     })
-    console.log('considered done, looped approx. ' + x + ' times')
   }
 }

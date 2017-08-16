@@ -32,6 +32,16 @@ commands.help = {
   }
 }
 
+commands['autorole-rerun'] = {
+  adminOnly: true,
+  modOnly: false, 
+  fn: function (bot, msg) {
+    msg.reply('rerunning autorole...').then(() => {
+      analytics.roleUsers(msg.guild, bot)
+    })
+  }
+}
+
 commands.stats = {
   adminOnly: false,
   modOnly: false,
