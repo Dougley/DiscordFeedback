@@ -322,6 +322,7 @@ commands.registerVote = {
               doc.reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the chat',
+                awardPoints: true,
                 affected: doc.UvId,
                 result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
               })
@@ -354,6 +355,7 @@ commands.registerVote = {
                 if (user !== null) {
                   genlog.log(bot, user, {
                     message: 'Chat-voted',
+                    awardPoints: true,
                     affected: doc.UvId
                   })
                   msg.addReaction({
@@ -417,6 +419,7 @@ commands.registerVote = {
               doc.reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the feed',
+                awardPoints: true,
                 affected: doc.UvId,
                 result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
               })
@@ -449,6 +452,7 @@ commands.registerVote = {
                 if (user !== null) {
                   genlog.log(bot, user, {
                     message: 'Feed-voted',
+                    awardPoints: true,
                     affected: doc.UvId
                   })
                   msg.addReaction({

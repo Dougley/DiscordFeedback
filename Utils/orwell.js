@@ -3,8 +3,6 @@ const r = new Dash()
 const roles = require('../roles')
 const genlog = require('./generic_logger')
 
-let x = 0
-
 module.exports = {
   awardPoints: (user, type) => {
     return new Promise((resolve, reject) => {
