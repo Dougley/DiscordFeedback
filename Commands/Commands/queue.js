@@ -345,7 +345,6 @@ commands.registerVote = {
                   id: '323058409203171328'
                 })
                 switchIDs(doc, bot)
-                r.db('DFB').table('queue').get(doc.id).delete().run()
               }
             }
           })
