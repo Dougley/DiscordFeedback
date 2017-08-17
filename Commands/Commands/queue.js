@@ -344,8 +344,8 @@ commands.registerVote = {
                   name: 'reported',
                   id: '323058409203171328'
                 })
-                doc.type = 'adminReviewDelete'
                 switchIDs(doc, bot)
+                r.db('DFB').table('queue').get(doc.id).delete().run()
               }
             }
           })
@@ -693,6 +693,7 @@ function deleteFromUV (UVID, uvClient, bot) {
 function switchIDs (og, bot) {
   bot.Channels.find(c => c.name === 'admin-queue').sendMessage('The following card was reported as inappropriate, please confirm this report.\n**Confirming this report will DESTROY the card, please be certain.**', false, og.embed).then(b => {
     og.id = b.id
+    og.type = 'adminReviewDelete'
     r.db('DFB').table('queue').insert(og).run().then(() => {
       b.addReaction({
         name: 'approve',
