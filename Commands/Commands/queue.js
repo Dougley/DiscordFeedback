@@ -600,6 +600,7 @@ commands.registerVote = {
             message: 'Dismissed a report',
             affected: doc.UvId
           })
+          bot.Channels.get('347823023102885889').sendMessage(`The following dupe report was denied by ${user.username}.`, msg.embeds[0])
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${doc.UV1} has been dismissed, no action has been taken.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
