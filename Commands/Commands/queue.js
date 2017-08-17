@@ -112,18 +112,21 @@ commands.dupe = {
       })
       return
     }
-    if (id2 == "-"){
-      if (dupeMap.has(msg.author.id)){
+    if (id2 == "-") {
+      if (dupeMap.has(msg.author.id)) {
         id2 = dupeMap.get(msg.author.id);
       } else {
-        msg.reply(`you attempted to use your previously used link, but you didn't submit one.`)
-        return
+        return msg.reply("you attempted to use your previously used link, but you didn't submit one.")
       }
     }
     if (id === id2) {
-      msg.reply('you cannot merge 2 of the same suggestions.')
-      return
+      return msg.reply("you cannot merge 2 of the same suggestions.")
     }
+    let force = suffix.split(' ')[2]
+    if (dupeDupe(id) && force !== "-f") {
+      return msg.reply("this suggestion has already been reported as a duplicate.")
+    }
+
     uv.v1.loginAsOwner().then(c => {
       c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
         c.get(`forums/${config.uservoice.forumId}/suggestions/${id2}.json`).then((data2) => {
@@ -637,6 +640,17 @@ commands.registerVote = {
       }
     }).catch(bugsnag.notify)
   }
+}
+
+function dupeDupe (uvid) {
+  if (uvid === null) return false
+  r.db('DFB').table('queue').filter({ type: 'adminMergeRequest', UV1: uvid }).run().then(results => {
+    if (results.length > 0) {
+      return true
+    } else {
+      return false
+    }
+  }).catch(bugsnag.notify)
 }
 
 function merge (target, dupe, uv) {

@@ -33,7 +33,7 @@ if (Config.debug === true) {
   })
 }
 
-const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{8,})(?:-[\w-]*)?/
+const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
 var uvClient = {
   v1: new UserVoice.Client({
