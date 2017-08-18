@@ -244,9 +244,12 @@ commands.url = {
   adminOnly: false,
   modOnly: false,
   fn: function (bot, msg, suffix) {
-    let id = suffix.match(/\d{7,}/)[0]
-    if (id) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
-    else msg.reply(`Please enter a Suggestion ID.`)
+    if (suffix) {
+      let id = suffix.match(/[0-9]{7,}/)[0]
+      if (id) msg.reply(`Here's the link: https://${config.uservoice.subdomain}.${config.uservoice.domain}/forums/${config.uservoice.forumId}/suggestions/${suffix}`)
+      else msg.reply(`Please enter a Suggestion ID.`)
+    }
+    else msg.reply(`URL for the Feedback page is https://${config.uservoice.subdomain}.${config.uservoice.domain}, though that's probably not what you were looking for. Try entering a Suggestion ID`)
   }
 }
 
