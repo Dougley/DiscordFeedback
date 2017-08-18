@@ -410,7 +410,7 @@ commands.registerVote = {
             })
           })
         }
-        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.notify)
         break
       }
       case 'newCard': {
@@ -507,7 +507,7 @@ commands.registerVote = {
             })
           })
         }
-        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.notify)
         break
       }
       case 'adminReviewDelete': {
@@ -590,7 +590,7 @@ commands.registerVote = {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
           deleteFromUV(doc.UvId, uv, bot)
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         }
         break
       }
@@ -618,7 +618,7 @@ commands.registerVote = {
               message: body
             }, e)
           })
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         } else if (reaction.id === '322646981476614144') {
           genlog.log(bot, user, {
             message: 'Approved a report',
@@ -633,7 +633,7 @@ commands.registerVote = {
               message: e.message
             }, e)
           })
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         }
         break
       }
