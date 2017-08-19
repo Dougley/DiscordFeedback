@@ -5,7 +5,7 @@ if (Config.debug === true) {
   Raven.config(Config.services.sentry, {
     environment: "development",
     autoBreadcrumbs: true,
-    release: require('./package.json').version,
+    release: require('../package.json').version,
     tags: {
       git_commit: require('git-rev-sync').short()
     }
@@ -14,7 +14,7 @@ if (Config.debug === true) {
   Raven.config(Config.services.sentry, {
     environment: "production",
     autoBreadcrumbs: true,
-    release: require('./package.json').version,
+    release: require('../package.json').version,
     tags: {
       git_commit: require('git-rev-sync').short()
     }
