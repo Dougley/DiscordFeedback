@@ -32,6 +32,16 @@ commands.help = {
   }
 }
 
+commands['autorole-rerun'] = {
+  adminOnly: true,
+  modOnly: false, 
+  fn: function (bot, msg) {
+    msg.reply('rerunning autorole...').then(() => {
+      analytics.roleUsers(msg.guild, bot)
+    })
+  }
+}
+
 commands.stats = {
   adminOnly: false,
   modOnly: false,
@@ -64,8 +74,14 @@ commands.stats = {
         }
       }
 
-      let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
-      let nextRole = sortRoles.find(r => r[1].threshold > data.consecutive.length)
+      let sortedRoles = Object.entries(roles).sort((a, b) => a[1].rank - b[1].rank)
+      let nextRankByThres = sortedRoles.find(r => r[1].threshold > data.consecutive.length)
+      let rolesID = sortedRoles.map(r => r[0])
+      let ownedRoles = msg.member.roles.map(r => rolesID.includes(r.id) ? r.id : '')
+      let highestRole = sortedRoles.findIndex(r => r[0] === ownedRoles[ownedRoles.length - 1])
+      let nextRankByOwned = highestRole != -1 ? sortedRoles[highestRole + 1] : ''
+      let nextRank = (nextRankByThres && nextRankByThres) ? ((ownedRoles.includes(nextRankByThres[0])) ? nextRankByOwned[1].threshold : nextRankByThres[1].threshold) - data.consecutive.length : 'N/A'
+
       field.push(
         {
           name: `Consecutive active days`,
@@ -74,7 +90,7 @@ commands.stats = {
         },
         {
           name: `Days needed for next rank`,
-          value: (nextRole) ? nextRole[1].threshold - data.consecutive.length : 'N/A',
+          value: nextRank,
           inline: true
         }
       )
@@ -169,11 +185,16 @@ commands.lookup = {
             inline: dataArr[i] ? (dataArr[i][1].msgs ? true : false) : false
           })
         }
-        // if (field.length === 3) break; <- Pretty sure this line is useless because of the if statement, right?
       }
 
-      let sortRoles = Object.entries(roles).sort((a, b) => a[1].threshold - b[1].threshold)
-      let nextRole = sortRoles.find(r => r[1].threshold > data.consecutive.length)
+      let sortedRoles = Object.entries(roles).sort((a, b) => a[1].rank - b[1].rank)
+      let nextRankByThres = sortedRoles.find(r => r[1].threshold > data.consecutive.length)
+      let rolesID = sortedRoles.map(r => r[0])
+      let ownedRoles = member.roles.map(r => rolesID.includes(r.id) ? r.id : '')
+      let highestRole = sortedRoles.findIndex(r => r[0] === ownedRoles[ownedRoles.length - 1])
+      let nextRankByOwned = highestRole != -1 ? sortedRoles[highestRole + 1] : ''
+      let nextRank = (nextRankByThres && nextRankByThres) ? ((ownedRoles.includes(nextRankByThres[0])) ? nextRankByOwned[1].threshold : nextRankByThres[1].threshold) - data.consecutive.length : 'N/A'
+
       field.push(
         {
           name: `Consecutive active days`,
@@ -182,7 +203,7 @@ commands.lookup = {
         },
         {
           name: `Days needed for next rank`,
-          value: (nextRole) ? nextRole[1].threshold - data.consecutive.length : 'N/A',
+          value: nextRank,
           inline: true
         }
       )

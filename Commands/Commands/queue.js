@@ -96,6 +96,7 @@ commands.dupe = {
     let parts2 = suffix.split(' ')[1].match(UVRegex)
     let id
     let id2
+    let force = suffix.split(' ')[2]
     if (parts === null) {
       id = suffix.split(' ')[0]
     } else {
@@ -112,153 +113,158 @@ commands.dupe = {
       })
       return
     }
-    if (id2 == "-"){
-      if (dupeMap.has(msg.author.id)){
+    if (id2 == "-") {
+      if (dupeMap.has(msg.author.id)) {
         id2 = dupeMap.get(msg.author.id);
       } else {
-        msg.reply(`you attempted to use your previously used link, but you didn't submit one.`)
-        return
+        return msg.reply("you attempted to use your previously used link, but you didn't submit one.")
       }
     }
     if (id === id2) {
-      msg.reply('you cannot merge 2 of the same suggestions.')
-      return
+      return msg.reply("you cannot merge 2 of the same suggestions.")
     }
-    uv.v1.loginAsOwner().then(c => {
-      c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
-        c.get(`forums/${config.uservoice.forumId}/suggestions/${id2}.json`).then((data2) => {
-          msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
-            color: 0x3498db,
-            author: {
-              name: data2.suggestion.creator.name,
-              icon_url: data2.suggestion.creator.avatar_url,
-              url: data2.suggestion.creator.url
-            },
-            title: data2.suggestion.title,
-            description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*' : '*No content*',
-            fields: [{
-              name: 'Votes',
-              value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
-            }],
-            footer: {
-              text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
-            }
-          }).then(() => {
-            wait(bot, msg).then((q) => {
-              if (q === null) {
-                msg.reply('you took too long to answer, the operation has been cancelled.').then(errmsg => {
+
+    r.db('DFB').table('queue').filter({ type: 'adminMergeRequest', UV1: id }).run().then(results => {
+      if (results.length > 0 && force !== "-f") {
+        return msg.reply("this suggestion has already been reported as a duplicate.")
+      } else {
+        uv.v1.loginAsOwner().then(c => {
+          c.get(`forums/${config.uservoice.forumId}/suggestions/${id}.json`).then((data) => {
+            c.get(`forums/${config.uservoice.forumId}/suggestions/${id2}.json`).then((data2) => {
+              msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
+                color: 0x3498db,
+                author: {
+                  name: data2.suggestion.creator.name,
+                  icon_url: data2.suggestion.creator.avatar_url,
+                  url: data2.suggestion.creator.url
+                },
+                title: data2.suggestion.title,
+                description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*' : '*No content*',
+                fields: [{
+                  name: 'Votes',
+                  value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
+                }],
+                footer: {
+                  text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
+                }
+              }).then(() => {
+                wait(bot, msg).then((q) => {
+                  if (q === null) {
+                    msg.reply('you took too long to answer, the operation has been cancelled.').then(errmsg => {
+                      setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+                    })
+                  }
+                  if (q === false) {
+                    msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
+                      setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
+                    })
+                  }
+                  if (q === true) {
+                    cBack({
+                      affected: id
+                    })
+                    msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
+                      setTimeout(() => bot.Messages.deleteMessages([msg]), config.timeouts.messageDelete)
+                    })
+                    dupeMap.set(msg.author.id, id2)
+                    bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
+                      color: 0x3498db,
+                      fields: [{
+                        name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
+                        value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}` : '*No content*',
+                        inline: false
+                      },
+                      {
+                        name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
+                        value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}` : '*No content*',
+                        inline: false
+                      },
+                      {
+                        name: 'Merge Candidate: Votes',
+                        value: parseInt(data.suggestion.vote_count),
+                        inline: true
+                      },
+                      {
+                        name: 'Merge Candidate: Date of creation',
+                        value: data.suggestion.created_at,
+                        inline: true
+                      },
+                      {
+                        name: 'Target Card: Votes',
+                        value: parseInt(data2.suggestion.vote_count),
+                        inline: true
+                      },
+                      {
+                        name: 'Target Card: Date of creation',
+                        value: data2.suggestion.created_at,
+                        inline: true
+                      }
+                      ],
+                      title: data2.suggestion.title,
+                      description: `These suggestions will be merged.\n[Target Card](${data2.suggestion.url})\n[Merge Candidate](${data.suggestion.url})`,
+                      footer: {
+                        text: data2.suggestion.category.name
+                      }
+                    }).then(b => {
+                      r.db('DFB').table('queue').insert({
+                        id: b.id,
+                        type: 'adminMergeRequest',
+                        author: msg.author,
+                        UV1: id,
+                        UV2: id2,
+                        UvId: id,
+                        embed: b.embeds[0]
+                      }).run().then(() => {
+                        b.addReaction({
+                          name: 'approve',
+                          id: '302137375092375553'
+                        })
+                        b.addReaction({
+                          name: 'deny',
+                          id: '302137375113609219'
+                        })
+                        b.addReaction({
+                          name: 'reverse',
+                          id: '322646981476614144'
+                        })
+                      }).catch(bugsnag.notify)
+                    })
+                  }
+                })
+              })
+            }).catch((e) => {
+              if (e.statusCode === 404) {
+                msg.reply('unable to find a suggestion using your second query.').then(errmsg => {
+                  setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+                })
+              } else {
+                logger.log(bot, {
+                  cause: 'dupe_search_second',
+                  message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+                }, e)
+                msg.reply('an error occured, please try again later.').then(errmsg => {
                   setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
                 })
               }
-              if (q === false) {
-                msg.reply('thanks for reconsidering, the operation has been cancelled.').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg, successmsg]), config.timeouts.messageDelete)
-                })
-              }
-              if (q === true) {
-                cBack({
-                  affected: id
-                })
-                msg.reply('your report has been sent to the admins, thanks!').then(successmsg => {
-                  setTimeout(() => bot.Messages.deleteMessages([msg]), config.timeouts.messageDelete)
-                })
-                dupeMap.set(msg.author.id, id2)
-                bot.Channels.find(f => f.name === 'admin-queue').sendMessage(`Merge **${data.suggestion.title}** (${id2}) into **${data2.suggestion.title}** (${id})?`, false, {
-                  color: 0x3498db,
-                  fields: [{
-                    name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
-                    value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}` : '*No content*',
-                    inline: false
-                  },
-                  {
-                    name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
-                    value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}` : '*No content*',
-                    inline: false
-                  },
-                  {
-                    name: 'Merge Candidate: Votes',
-                    value: parseInt(data.suggestion.vote_count),
-                    inline: true
-                  },
-                  {
-                    name: 'Merge Candidate: Date of creation',
-                    value: data.suggestion.created_at,
-                    inline: true
-                  },
-                  {
-                    name: 'Target Card: Votes',
-                    value: parseInt(data2.suggestion.vote_count),
-                    inline: true
-                  },
-                  {
-                    name: 'Target Card: Date of creation',
-                    value: data2.suggestion.created_at,
-                    inline: true
-                  }
-                  ],
-                  title: data2.suggestion.title,
-                  description: `These suggestions will be merged.\n[Target Card](${data2.suggestion.url})\n[Merge Candidate](${data.suggestion.url})`,
-                  footer: {
-                    text: data2.suggestion.category.name
-                  }
-                }).then(b => {
-                  r.db('DFB').table('queue').insert({
-                    id: b.id,
-                    type: 'adminMergeRequest',
-                    author: msg.author,
-                    UV1: id,
-                    UV2: id2,
-                    UvId: id,
-                    embed: b.embeds[0]
-                  }).run().then(() => {
-                    b.addReaction({
-                      name: 'approve',
-                      id: '302137375092375553'
-                    })
-                    b.addReaction({
-                      name: 'deny',
-                      id: '302137375113609219'
-                    })
-                    b.addReaction({
-                      name: 'reverse',
-                      id: '322646981476614144'
-                    })
-                  }).catch(bugsnag.notify)
-                })
-              }
             })
+          }).catch((e) => {
+            if (e.statusCode === 404) {
+              msg.reply('unable to find a suggestion using your first query.').then(errmsg => {
+                setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+              })
+            } else {
+              logger.log(bot, {
+                cause: 'dupe_search_first',
+                message: (e.message !== undefined) ? e.message : JSON.stringify(e)
+              }, e)
+              msg.reply('an error occured, please try again later.').then(errmsg => {
+                setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+              })
+            }
           })
-        }).catch((e) => {
-          if (e.statusCode === 404) {
-            msg.reply('unable to find a suggestion using your second query.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
-            })
-          } else {
-            logger.log(bot, {
-              cause: 'dupe_search_second',
-              message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-            }, e)
-            msg.reply('an error occured, please try again later.').then(errmsg => {
-              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
-            })
-          }
         })
-      }).catch((e) => {
-        if (e.statusCode === 404) {
-          msg.reply('unable to find a suggestion using your first query.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
-          })
-        } else {
-          logger.log(bot, {
-            cause: 'dupe_search_first',
-            message: (e.message !== undefined) ? e.message : JSON.stringify(e)
-          }, e)
-          msg.reply('an error occured, please try again later.').then(errmsg => {
-            setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
-          })
-        }
-      })
-    })
+      }
+    }).catch(bugsnag.notify)
   }
 }
 
@@ -322,6 +328,7 @@ commands.registerVote = {
               doc.reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the chat',
+                awardPoints: true,
                 affected: doc.UvId,
                 result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
               })
@@ -340,7 +347,6 @@ commands.registerVote = {
                   name: 'reported',
                   id: '323058409203171328'
                 })
-                doc.type = 'adminReviewDelete'
                 switchIDs(doc, bot)
               }
             }
@@ -354,6 +360,7 @@ commands.registerVote = {
                 if (user !== null) {
                   genlog.log(bot, user, {
                     message: 'Chat-voted',
+                    awardPoints: true,
                     affected: doc.UvId
                   })
                   msg.addReaction({
@@ -406,7 +413,7 @@ commands.registerVote = {
             })
           })
         }
-        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.notify)
         break
       }
       case 'newCard': {
@@ -417,6 +424,7 @@ commands.registerVote = {
               doc.reports++
               genlog.log(bot, user, {
                 message: 'Reported a card as inappropriate in the feed',
+                awardPoints: true,
                 affected: doc.UvId,
                 result: (doc.reports === config.discord.reportThreshold) ? 'Report has been sent to admins' : undefined
               })
@@ -449,6 +457,7 @@ commands.registerVote = {
                 if (user !== null) {
                   genlog.log(bot, user, {
                     message: 'Feed-voted',
+                    awardPoints: true,
                     affected: doc.UvId
                   })
                   msg.addReaction({
@@ -501,7 +510,7 @@ commands.registerVote = {
             })
           })
         }
-        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.nofify)
+        r.db('DFB').table('queue').get(doc.id).update(doc).run().catch(bugsnag.notify)
         break
       }
       case 'adminReviewDelete': {
@@ -584,7 +593,7 @@ commands.registerVote = {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
           deleteFromUV(doc.UvId, uv, bot)
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         }
         break
       }
@@ -594,6 +603,7 @@ commands.registerVote = {
             message: 'Dismissed a report',
             affected: doc.UvId
           })
+          bot.Channels.get('347823023102885889').sendMessage(`The following dupe report was denied by ${user.username}.`, false, doc.embed)
           bot.Channels.find(c => c.name === 'admin-queue').sendMessage(`The merge request for ${doc.UV1} has been dismissed, no action has been taken.`).then(o => {
             setTimeout(() => bot.Messages.deleteMessages([o.id, msg.id], bot.Channels.find(c => c.name === 'admin-queue').id), config.timeouts.messageDelete)
           })
@@ -611,7 +621,7 @@ commands.registerVote = {
               message: body
             }, e)
           })
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         } else if (reaction.id === '322646981476614144') {
           genlog.log(bot, user, {
             message: 'Approved a report',
@@ -626,7 +636,7 @@ commands.registerVote = {
               message: e.message
             }, e)
           })
-          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.nofify)
+          r.db('DFB').table('queue').get(doc.id).delete().run().catch(bugsnag.notify)
         }
         break
       }
@@ -675,6 +685,7 @@ function deleteFromUV (UVID, uvClient, bot) {
 function switchIDs (og, bot) {
   bot.Channels.find(c => c.name === 'admin-queue').sendMessage('The following card was reported as inappropriate, please confirm this report.\n**Confirming this report will DESTROY the card, please be certain.**', false, og.embed).then(b => {
     og.id = b.id
+    og.type = 'adminReviewDelete'
     r.db('DFB').table('queue').insert(og).run().then(() => {
       b.addReaction({
         name: 'approve',

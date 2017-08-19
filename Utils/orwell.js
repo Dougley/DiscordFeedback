@@ -3,8 +3,6 @@ const r = new Dash()
 const roles = require('../roles')
 const genlog = require('./generic_logger')
 
-let x = 0
-
 module.exports = {
   awardPoints: (user, type) => {
     return new Promise((resolve, reject) => {
@@ -24,7 +22,7 @@ module.exports = {
           let last = new Date(parseInt(consecutive[consecutive.length -1]))
           let difference = today - last
           if (difference === 86400000) { // 1 day difference
-            consecutive.push(today.toString())
+            if (o.messages && o.messages[today] && o.messages[today] > 4 && o.commands && o.commands[today] && o.commands[today] > 0) consecutive.push(today.toString())
             if (consecutive.length > 1 && streak === 0) streak = consecutive.length // backwards compatibility
             if (consecutive.length - streak === 1) { // streak counter is 1 day behind
               streak++
@@ -52,7 +50,7 @@ module.exports = {
         console.log(`found ${results.length} records`)
         for (const row of results) {
 
-          if (!row || !row.messages || !row.streak && row.streak !== 0) continue;
+          if (!row || !row.messages || !row.streak && row.streak !== 0) continue
           let totalDays = Object.keys(row.messages).length
           let consecutiveDays = row.streak
           let member = guild.members.find(member => member.id === row.id)
@@ -61,7 +59,7 @@ module.exports = {
             continue
           }
 
-          if (member.hasRole('268815351360389121') || member.hasRole('268815286067527690')) continue;
+          if (member.hasRole('268815351360389121') || member.hasRole('268815286067527690')) continue
           
           // is the user active?
           let active = false
@@ -74,12 +72,12 @@ module.exports = {
               // if user has role, then get all dates in between role.decay and now
               // if user has not interacted in those dates, then they are no longer active
               let dates = Array.apply(null, new Array(role.decay)).map((v, i) => {
-                var d = new Date();
+                var d = new Date()
                 d.setDate(d.getDate() + i + 1 - 7)
                 d.setHours(0,0,0,0)
                 return d.getTime()
               })
-              if (dates.some(date => date in row.messages)) active = true;
+              if (dates.some(date => date in row.messages)) active = true
             } 
             console.log(totalDays, consecutiveDays, role.threshold, totalDays && consecutiveDays >= role.threshold)
             if (totalDays && consecutiveDays >= role.threshold) {
@@ -103,7 +101,7 @@ module.exports = {
           })
 
           if (!active) {
-            if (roleWeights.length === 0) return; // has no roles :c
+            if (roleWeights.length === 0) continue // has no roles :c
             let highest = Math.max.apply(Math, roleWeights)
             // We can loop again now we know what we're looking for
             Object.entries(roles).some(([key, role]) => {
@@ -123,6 +121,5 @@ module.exports = {
         }
       })
     })
-    console.log('considered done, looped approx. ' + x + ' times')
   }
 }
