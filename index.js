@@ -2,40 +2,19 @@ const Discordie = require('discordie')
 const UserVoice = require('uservoice-nodejs')
 const Events = Discordie.Events
 const Config = require('./config.js')
+const logger = require('./Utils/error_loggers')
 const Commands = require('./Utils/command_engine').Commands
 const AccessChecker = require('./Utils/access_checker')
-const ErrorLog = require('./Utils/error_loggers')
-const GenericLog = require('./Utils/generic_logger')
+const genlog = require('./Utils/generic_logger')
 const woofmeow = require('./Utils/woofmeow')
 const Analytics = require('./Utils/orwell')
 const bot = new Discordie({
   autoReconnect: true
 })
 
-var bugsnag = require('bugsnag')
-if (Config.debug === true) {
-  let releaseLocation = "development"
-  bugsnag.register(Config.discord.bugsnag, {
-    releaseStage: releaseLocation,
-    sendCode: true,
-    onUncaughtError: function (err) {
-      console.error(err.stack || err);
-    }
-  })
-} else {
-  let releaseLocation = "production"
-  bugsnag.register(Config.discord.bugsnag, {
-    releaseStage: releaseLocation,
-    sendCode: true,
-    onUncaughtError: function (err) {
-      console.error(err.stack || err);
-    }
-  })
-}
-
 const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
-var uvClient = {
+const uvClient = {
   v1: new UserVoice.Client({
     subdomain: Config.uservoice.subdomain.trim(),
     domain: Config.uservoice.domain.trim(),
@@ -62,11 +41,11 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
     Analytics.awardPoints(c.message.author.id, 'messages')
   }
   if (c.message.content.indexOf(Config.discord.prefix) === 0) {
-    var cmd = c.message.content.substr(Config.discord.prefix.length).split(' ')[0].toLowerCase()
-    var suffix
+    let cmd = c.message.content.substr(Config.discord.prefix.length).split(' ')[0].toLowerCase()
+    let suffix
     suffix = c.message.content.substr(Config.discord.prefix.length).split(' ')
     suffix = suffix.slice(1, suffix.length).join(' ')
-    var msg = c.message
+    let msg = c.message
     if (Commands[cmd]) {
       if (Commands[cmd].internal === true) return
       AccessChecker.getLevel(msg.member, (level) => {
@@ -75,8 +54,8 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
           return
         } else if (level !== 2 && Commands[cmd].adminOnly === true) return
         try {
-          Commands[cmd].fn(bot, msg, suffix, uvClient, function (res) {
-            GenericLog.log(bot, c.message.author, {
+          Commands[cmd].fn(bot, msg, suffix, uvClient, (res) => {
+            genlog.log(bot, c.message.author, {
               message: `Ran the command \`${cmd}\``,
               result: res.result,
               affected: res.affected,
@@ -84,7 +63,7 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
             })
           })
         } catch (e) {
-          ErrorLog.log(bot, {
+          logger.log(bot, {
             cause: cmd,
             message: e.message
           })
@@ -131,9 +110,14 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   Commands['initializeTop'].fn(bot, uvClient)
 })
 
+process.on('uncaughtException', (err) => {
+  logger.raven(err.stack || err)
+})
+
 process.on('unhandledRejection', (reason, p) => {
   if (p !== null && reason !== null) {
-    bugsnag.notify(new Error(`Unhandled promise: ${require('util').inspect(p, {depth: 3})}: ${reason}`))
+    if (p instanceof Error) logger.raven(p)
+    else logger.raven(new Error(`Unhandled promise: ${require('util').inspect(p, {depth: 3})}: ${reason}`))
   }
 })
 

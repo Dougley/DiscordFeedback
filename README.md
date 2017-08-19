@@ -9,6 +9,7 @@ However, if you do want to run an instance, you need the following:
 - UserVoice API keys, these **must** be marked as "Trusted" inside the admin panel.
 - Discord bot account
 - [RethinkDB](https://www.rethinkdb.com)
+- A Sentry DSN
 - Discord server (duh)
   - Server **must** have channels named `bot-log`, `admin-queue` and `bot-error`, and the bot **must** have write access to these channels.
   
@@ -19,7 +20,7 @@ Config creation is pretty straightforward, all values given in the example confi
 Run `npm run-script dbcreate` in the project root to initialize RethinkDB with the required tables.
 
 ## Starting
-Run `npm start`, please note there will be little to no console output, this program is highly reliant on [Bugsnag](http://bugsnag.com) for error reporting.
+Run `npm start`, please note there will be little to no console output, this program is highly reliant on [Sentry](https://sentry.io) for error reporting.
 
 ---
 

@@ -2,6 +2,7 @@ const Dash = require('rethinkdbdash')
 const r = new Dash()
 const roles = require('../roles')
 const genlog = require('./generic_logger')
+const logger = require('./error_loggers')
 
 module.exports = {
   awardPoints: (user, type) => {
@@ -48,7 +49,7 @@ module.exports = {
     bot.Users.fetchMembers().then(() => {
       r.db("DFB").table("analytics").run().then((results) => {
         console.log(`found ${results.length} records`)
-        for (const row of results) {
+        for (let row of results) {
 
           if (!row || !row.messages || !row.streak && row.streak !== 0) continue
           let totalDays = Object.keys(row.messages).length
@@ -64,7 +65,7 @@ module.exports = {
           // is the user active?
           let active = false
 
-          var roleWeights = [] // array of role weights for every role the user has
+          let roleWeights = [] // array of role weights for every role the user has
 
           Object.entries(roles).forEach(([key, role]) => {
             console.log(`looping for role id: ${key} (${role.name}) on member ${member.name}`)
@@ -72,7 +73,7 @@ module.exports = {
               // if user has role, then get all dates in between role.decay and now
               // if user has not interacted in those dates, then they are no longer active
               let dates = Array.apply(null, new Array(role.decay)).map((v, i) => {
-                var d = new Date()
+                let d = new Date()
                 d.setDate(d.getDate() + i + 1 - 7)
                 d.setHours(0,0,0,0)
                 return d.getTime()
@@ -92,7 +93,7 @@ module.exports = {
                 genlog.log(bot, bot.User, { 
                   message: `Added ${member.name}#${member.discriminator} to ${role.name}.`
                 })
-              }).catch(console.error)
+              }).catch(logger.raven)
               return
             } else if (!active) {
               console.log(`${member.name} isn't considered active`)
@@ -119,7 +120,7 @@ module.exports = {
             })
           }
         }
-      })
+      }).catch(logger.raven)
     })
   }
 }

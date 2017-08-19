@@ -1,15 +1,12 @@
-var commands = []
+let commands = []
 
-// var checker = require('../../Utils/access_checker')
-// var logger = require('../../Utils/error_loggers')
-var config = require('../../config.js')
-var analytics = require('../../Utils/orwell.js')
-var bugsnag = require('bugsnag')
+// const checker = require('../../Utils/access_checker')
+const logger = require('../../Utils/error_loggers')
+const config = require('../../config.js')
+const analytics = require('../../Utils/orwell.js')
 const Dash = require('rethinkdbdash')
 const r = new Dash()
 const roles = require('../../roles')
-
-bugsnag.register(config.discord.bugsnag)
 
 commands.ping = {
   phantom: true,
@@ -102,11 +99,11 @@ commands.stats = {
             url: msg.author.staticAvatarURL
           },
           fields: field
-        }).catch(bugsnag.notify) // Send Message to DM error
-      }).then(msg.delete()).catch(bugsnag.notify) // Error opening DM channel
+        }).catch(logger.raven) // Send Message to DM error
+      }).then(msg.delete()).catch(logger.raven) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
-      console.error(e)
+      logger.raven(e)
     })
   }
 }
@@ -138,7 +135,7 @@ commands['stats-reset'] = {
                     r.db('DFB').table('analytics').get(suffix).delete().run().then(() => {
                       msg.channel.sendMessage(`Stats for ${suffix} are deleted.`)
                     }).catch(e => {
-                      bugsnag.notify(e)
+                      logger.raven(e)
                       msg.channel.sendMessage(`Failed to delete stats for ${suffix}`)
                     })
                   }
@@ -217,7 +214,7 @@ commands.lookup = {
       })
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
-      console.error(e)
+      logger.raven(e)
     })
   }
 }
@@ -250,7 +247,7 @@ function wait (bot, msg) {
   let yn = /^y(es)?$|^n(o)?$/i
   return new Promise((resolve, reject) => {
     bot.Dispatcher.on('MESSAGE_CREATE', function doStuff (c) {
-      var time = setTimeout(() => {
+      let time = setTimeout(() => {
         resolve(null)
         bot.Dispatcher.removeListener('MESSAGE_CREATE', doStuff)
       }, config.timeouts.duplicateConfirm) // We won't wait forever for the person to anwser

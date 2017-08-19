@@ -33,10 +33,10 @@
     "eslint-plugin-standard": "^2.0.1"
   },
   "dependencies": {
-    "bugsnag": "^1.9.1",
     "discordie": "git://github.com/qeled/discordie.git#dev",
     "html-entities": "^1.2.1",
     "moment": "^2.18.1",
+    "raven": "^2.1.2",
     "require-directory": "^2.1.1",
     "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"
