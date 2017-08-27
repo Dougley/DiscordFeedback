@@ -58,7 +58,7 @@ bot.Dispatcher.on(Events.MESSAGE_CREATE, (c) => {
     Commands['newCardInit'].fn(c.message)
     return
   }
-  if (!c.message.author.bot) {
+  if (!c.message.author.bot && !c.message.content.startsWith(Config.discord.prefix)) {
     Analytics.awardPoints(c.message.author.id, 'messages')
   }
   if (c.message.content.indexOf(Config.discord.prefix) === 0) {
