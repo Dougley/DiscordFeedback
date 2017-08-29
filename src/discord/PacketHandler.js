@@ -28,9 +28,6 @@ function handle(client, packet) { // eslint-disable-line complexity
     case 'GUILD_UPDATE': {
       if (packet.d.id !== ROOT_GUILD) return;
       return false;
-      // const n = packet.d;
-      // // if (Reflect.has(n, 'name')) guild.name = n.name;
-      // return guild;
     }
     case 'GUILD_DELETE': {
       if (packet.d.id !== ROOT_GUILD) return;

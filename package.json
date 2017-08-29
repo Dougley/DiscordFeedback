@@ -19,6 +19,7 @@
   "dependencies": {
     "erlpack": "github:hammerandchisel/erlpack",
     "promise_util": "^1.0.1",
+    "raven": "^2.1.2",
     "snekfetch": "^3.2.6",
     "uws": "^8.14.1"
   },

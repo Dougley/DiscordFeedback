@@ -5,22 +5,6 @@ class Message {
     Object.defineProperty(this, 'client', { value: client });
 
     this.patch(packet);
-
-    this.react = new Proxy(config.discord.emojis, {
-      get: (target, prop) => {
-        const id = target[prop];
-        if (typeof id !== 'string') return id;
-        if (id == null) return Promise.reject(new Error('invalid emoji')); // eslint-disable-line eqeqeq
-        return (time) => {
-          const endpoint = client.api.channels(this.channel_id).messages(this.id)
-            .reactions(encodeURIComponent(`${prop}:${id}`), '@me');
-          return endpoint.put().then(() => {
-            if (time) return new Promise((s, f) => setTimeout(() => endpoint.delete().then(s, f), time));
-            return true;
-          });
-        };
-      },
-    });
   }
 
   patch(packet) {
@@ -34,6 +18,17 @@ class Message {
 
   get editedAt() {
     return new Date(this.editedTimestamp);
+  }
+
+  react(name, time) {
+    const id = config.discord.emojis[name];
+    if (!id) return Promise.reject(new Error('invalid emoji'));
+    const endpoint = this.client.api.channels(this.channel_id).messages(this.id)
+      .reactions(encodeURIComponent(`${name}:${id}`), '@me');
+    return endpoint.put().then(() => {
+      if (time) return new Promise((r) => setTimeout(r, time)).then(() => endpoint.delete());
+      return true;
+    });
   }
 
   reply(content, options = {}) {

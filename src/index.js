@@ -5,9 +5,16 @@ const config = require('../config');
 const logger = require('./util/logger');
 
 const client = new Client();
+let prefix;
+
+client.on('READY', (packet) => {
+  prefix = new RegExp(`^(<@!?${packet.user.id}>|${config.discord.prefix})`, 'i');
+});
 
 client.on('MESSAGE_CREATE', (message) => {
-  logger.log('MESSAGE', message.react.deny(1000));
+  if (!prefix || message.author.bot || !prefix.test(message.content)) return;
+  const [command, ...content] = message.content.replace(prefix, '').trim().split(' ');
+  console.log(command, content);
 });
 
 client.on('MESSAGE_REACTION_ADD', (x) => {
