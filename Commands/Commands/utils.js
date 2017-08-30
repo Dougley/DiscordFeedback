@@ -49,11 +49,13 @@ commands['streak-mod'] = {
     msg.channel.sendTyping()
     let parts = suffix.split(' ')
     analytics.getPoints(parts[0]).then(data => {
+      let now = new Date()
+      let today = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime()
       if (data === null) return msg.reply('no data for this user, cannot edit.')
       let moment = require('moment')
       let newstreak = []
       for (let x = parseInt(parts[1]); x !== 0; x--) {
-        let date = new Date(moment().days(-Math.abs(x))).getTime().toString()
+        let date = new Date(moment(today).subtract(x, 'days')).getTime().toString()
         newstreak.push(date)
       }
       analytics.arbitraryEdit(parts[0], newstreak).then(() => {
