@@ -42,6 +42,25 @@ commands['autorole-rerun'] = {
   }
 }
 
+commands['streak-mod'] = {
+  adminOnly: true,
+  modOnly: false,
+  fn: function (bot, msg, suffix) {
+    msg.channel.sendTyping()
+    let parts = suffix.split(' ')
+    analytics.getPoints(parts[0]).then(data => {
+      if (data === null) return msg.reply('no data for this user, cannot edit.')
+      analytics.arbitraryEdit(parts[0], parts[1]).then(() => {
+        return msg.reply('analytics data edited.')
+      }).catch(() => {
+        return msg.reply('something went wrong.')
+      })
+    }).catch(() => {
+      return msg.reply('cannot fetch data.')
+    })
+  }
+}
+
 commands.stats = {
   adminOnly: false,
   modOnly: false,

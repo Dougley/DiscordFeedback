@@ -44,6 +44,13 @@ module.exports = {
       r.db('DFB').table('analytics').get(user).run().then(resolve).catch(reject)
     })
   },
+  arbitraryEdit: (user, newstreak) => {
+    return new Promise((resolve, reject) => {
+      r.db('DFB').table('analytics').get(user).update({
+        consecutive: newstreak
+      }).run().then(resolve).catch(reject)
+    })
+  },
   roleUsers: (guild, bot) => {
     bot.Users.fetchMembers().then(() => {
       r.db("DFB").table("analytics").run().then((results) => {
