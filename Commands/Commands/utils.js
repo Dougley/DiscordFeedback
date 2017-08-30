@@ -50,7 +50,13 @@ commands['streak-mod'] = {
     let parts = suffix.split(' ')
     analytics.getPoints(parts[0]).then(data => {
       if (data === null) return msg.reply('no data for this user, cannot edit.')
-      analytics.arbitraryEdit(parts[0], parts[1]).then(() => {
+      let moment = require('moment')
+      let newstreak = []
+      for (let x = parseInt(parts[1]); x !== 0; x--) {
+        let date = new Date(moment().days(-Math.abs(x))).getTime().toString()
+        newstreak.push(date)
+      }
+      analytics.arbitraryEdit(parts[0], newstreak).then(() => {
         return msg.reply('analytics data edited.')
       }).catch(() => {
         return msg.reply('something went wrong.')
