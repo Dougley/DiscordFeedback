@@ -1,10 +1,10 @@
-var commands = []
+let commands = []
 
-// var checker = require('../../Utils/access_checker')
-var logger = require('../../Utils/error_loggers')
-var config = require('../../config.js')
-var Entities = require('html-entities').AllHtmlEntities
-var UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
+// const checker = require('../../Utils/access_checker')
+const logger = require('../../Utils/error_loggers')
+const config = require('../../config.js')
+const Entities = require('html-entities').AllHtmlEntities
+const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})-[\w-]+\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
 const entities = new Entities()
 
@@ -308,7 +308,7 @@ commands.info = {
               },
               timestamp: new Date(data.user.created_at)
             })
-          }).catch(() => {}) // Make bugsnag ignore it, error handling below
+          }).catch(logger.raven)
         }).catch(() => {
           return msg.channel.sendMessage('User could not be found on UserVoice, make sure they have logged into the Feedback site at least once.').then(errMsg => {
             setTimeout(() => bot.Messages.deleteMessages([msg, errMsg]), config.timeouts.errorMessageDelete)

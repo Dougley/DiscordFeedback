@@ -1,3 +1,3 @@
 'use strict'
-var directory = require('require-directory')
+const directory = require('require-directory')
 module.exports = directory(module, './Commands')

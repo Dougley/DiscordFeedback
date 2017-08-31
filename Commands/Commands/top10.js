@@ -1,10 +1,10 @@
-var Entities = require('html-entities').AllHtmlEntities
-var config = require('../../config.js')
+const Entities = require('html-entities').AllHtmlEntities
+const config = require('../../config.js')
 const entities = new Entities()
 const Dash = require('rethinkdbdash')
 const r = new Dash()
 
-var commands = []
+let commands = []
 
 commands.initializeTop = {
   internal: true,

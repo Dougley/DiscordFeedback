@@ -1,5 +1,5 @@
-var Dash = require('rethinkdbdash')
-var r = new Dash()
+const Dash = require('rethinkdbdash')
+const r = new Dash()
 
 r.db('DFB').table('queue').then(() => {
   console.log('Database DFB exists, checking for tables...')

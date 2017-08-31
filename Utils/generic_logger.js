@@ -1,7 +1,7 @@
 const Analytics = require('./orwell.js')
 
-exports.log = function (bot, user, cObj) {
-  var fields = []
+exports.log = (bot, user, cObj) => {
+  let fields = []
   if (cObj.result !== undefined) fields.push({name: 'This resulted in the following:', value: cObj.result, inline: false})
   if (cObj.affected !== undefined) fields.push({name: 'This affected the following cards:', value: cObj.affected, inline: false})
   if (cObj.awardPoints === true) Analytics.awardPoints(user.id, 'commands')
