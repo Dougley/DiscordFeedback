@@ -39,6 +39,31 @@ commands['autorole-rerun'] = {
   }
 }
 
+commands['streak-mod'] = {
+  adminOnly: true,
+  modOnly: false,
+  fn: function (bot, msg, suffix) {
+    msg.channel.sendTyping()
+    let parts = suffix.split(' ')
+    analytics.getPoints(parts[0]).then(data => {
+      if (data === null) return msg.reply('no data for this user, cannot edit.')
+      let moment = require('moment')
+      let newstreak = []
+      for (let x = parseInt(parts[1]); x !== 0; x--) {
+        let date = new Date(moment().startOf('day').subtract(x, 'days')).getTime().toString()
+        newstreak.push(date)
+      }
+      analytics.arbitraryEdit(parts[0], newstreak).then(() => {
+        return msg.reply('analytics data edited.')
+      }).catch(() => {
+        return msg.reply('something went wrong.')
+      })
+    }).catch(() => {
+      return msg.reply('cannot fetch data.')
+    })
+  }
+}
+
 commands.stats = {
   adminOnly: false,
   modOnly: false,

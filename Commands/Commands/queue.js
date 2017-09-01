@@ -45,15 +45,15 @@ commands.chatVoteInit = {
         embed: {
           color: 0x3498db,
           author: {
-            name: data.suggestion.creator.name,
-            icon_url: data.suggestion.creator.avatar_url,
-            url: data.suggestion.creator.url
+            name: (data.suggestion.creator) ? data.suggestion.creator.name : 'Anonymous',
+            url: (data.suggestion.creator) ? data.suggestion.creator.url : undefined,
+            icon_url: (data.suggestion.creator) ? data.suggestion.creator.avatar_url : 'https://assets1.uvcdn.com/pkg/admin/icons/user_70-62136f6de7efc58cc79dabcfed799c01.png' // This is the default UV avatar
           },
           title: data.suggestion.title,
-          description: (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*',
+          description: data.suggestion.text ? (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*' : '*No content*',
           url: data.suggestion.url,
           footer: {
-            text: (data.suggestion.category !== null) ? data.suggestion.category.name : 'No category'
+            text: (data.suggestion.category) ? data.suggestion.category.name : 'No category'
           }
         },
         reporters: [],
