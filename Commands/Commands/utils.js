@@ -126,7 +126,7 @@ commands.stats = {
           fields: field
         }).catch((e) => {
           if (e.code === '50007') { // 50007 is the discord json code for not being able to send a DM to a user.
-            msg.reply('Unable to DM you any stats. Maybe you don\'t have DM\'s enabled?').then(errmsg => {
+            msg.reply("Unable to DM you any stats. Maybe you don't have DM's enabled?").then(errmsg => {
               setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
             })
           } else {
