@@ -116,15 +116,24 @@ commands.stats = {
           inline: true
         }
       )
-      msg.author.openDM().then((e) => {
-        e.sendMessage('', false, {
+      msg.author.openDM().then((dm) => {
+        dm.sendMessage('', false, {
           color: 0x59f442,
           title: `${msg.author.username} - Statistics`,
           thumbnail: {
             url: msg.author.staticAvatarURL
           },
           fields: field
-        }).catch(logger.raven) // Send Message to DM error
+        }).catch((e) => {
+          if (e.code === '50007') { // 50007 is the discord json code for not being able to send a DM to a user.
+            msg.reply('Unable to DM you any stats. Maybe you don\'t have DM\'s enabled?').then(errmsg => {
+              setTimeout(() => bot.Messages.deleteMessages([msg, errmsg]), config.timeouts.errorMessageDelete)
+            })
+          } else {
+            msg.reply('an unexpected error occured while getting your stats, try again later.')
+            logger.raven(e)
+          }
+        }) // Send Message to DM error
       }).then(msg.delete()).catch(logger.raven) // Error opening DM channel
     }).catch(e => {
       msg.reply('an unexpected error occured while getting your stats, try again later.')
