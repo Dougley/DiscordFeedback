@@ -22,7 +22,7 @@ module.exports = {
         if (consecutive.indexOf(today.toString()) === -1) {
           let last = new Date(parseInt(consecutive[consecutive.length -1]))
           let difference = today - last
-          if (difference === 86400000) { // 1 day difference
+          if (difference === 129600000) { // 1.5 day difference between last streak time
             if (o.messages && o.messages[today] && o.messages[today] > 4 && o.commands && o.commands[today] && o.commands[today] > 0) consecutive.push(today.toString())
             if (consecutive.length > 1 && streak === 0) streak = consecutive.length // backwards compatibility
             if (consecutive.length - streak === 1) { // streak counter is 1 day behind
