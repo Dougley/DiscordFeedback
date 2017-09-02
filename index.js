@@ -103,6 +103,7 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   }, 600000)
 
   // admin-queue amount playing status
+  r.db('DFB').table('queue').without('newCard', 'chatVote').distinct().count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
   setInterval(() => {
     r.db('DFB').table('queue').without('newCard', 'chatVote').distinct().count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
   }, 60000)
