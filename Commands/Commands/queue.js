@@ -5,6 +5,8 @@ const checker = require('../../Utils/access_checker')
 const logger = require('../../Utils/error_loggers')
 const genlog = require('../../Utils/generic_logger')
 const config = require('../../config.js')
+const Entities = require('html-entities').AllHtmlEntities
+const entities = new Entities()
 
 const dupeMap = new Map()
 
@@ -45,15 +47,15 @@ commands.chatVoteInit = {
         embed: {
           color: 0x3498db,
           author: {
-            name: (data.suggestion.creator) ? data.suggestion.creator.name : 'Anonymous',
+            name: (data.suggestion.creator) ? entities.decode(data.suggestion.creator.name) : 'Anonymous',
             url: (data.suggestion.creator) ? data.suggestion.creator.url : undefined,
             icon_url: (data.suggestion.creator) ? data.suggestion.creator.avatar_url : 'https://assets1.uvcdn.com/pkg/admin/icons/user_70-62136f6de7efc58cc79dabcfed799c01.png' // This is the default UV avatar
           },
-          title: data.suggestion.title,
-          description: data.suggestion.text ? (data.suggestion.text.length < 1900) ? data.suggestion.text : '*Content too long*' : '*No content*',
+          title: entities.decode(data.suggestion.title),
+          description: data.suggestion.text ? (data.suggestion.text.length < 1900) ? entities.decode(data.suggestion.text) : '*Content too long*' : '*No content*',
           url: data.suggestion.url,
           footer: {
-            text: (data.suggestion.category) ? data.suggestion.category.name : 'No category'
+            text: (data.suggestion.category) ? entities.decode(data.suggestion.category.name) : 'No category'
           }
         },
         reporters: [],
@@ -131,19 +133,19 @@ commands.dupe = {
               msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
                 color: 0x3498db,
                 author: {
-                  name: data2.suggestion.creator.name,
+                  name: entities.decode(data2.suggestion.creator.name),
                   icon_url: data2.suggestion.creator.avatar_url,
                   url: data2.suggestion.creator.url
                 },
-                title: data2.suggestion.title,
+                title: entities.decode(data2.suggestion.title),
                 url: data2.suggestion.url,
-                description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? data2.suggestion.text : '*Content too long*' : '*No content*',
+                description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? entities.decode(data2.suggestion.text) : '*Content too long*' : '*No content*',
                 fields: [{
                   name: 'Votes',
                   value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
                 }],
                 footer: {
-                  text: (data2.suggestion.category !== null) ? data2.suggestion.category.name : 'No category'
+                  text: (data2.suggestion.category !== null) ? entities.decode(data2.suggestion.category.name) : 'No category'
                 }
               }).then(() => {
                 wait(bot, msg).then((q) => {
@@ -169,12 +171,12 @@ commands.dupe = {
                       color: 0x3498db,
                       fields: [{
                         name: `Merge Candidate: ${(data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
-                        value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${data.suggestion.text.substring(0, 500)}` : '*No content*',
+                        value: (data.suggestion.text !== null) ? (data.suggestion.text.length < 500) ? data.suggestion.text : `${entities.decode(data.suggestion.text.substring(0, 500))}` : '*No content*',
                         inline: false
                       },
                       {
                         name: `Target Card: ${(data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? 'Content' : 'Summary' : 'Content'}`,
-                        value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${data2.suggestion.text.substring(0, 500)}` : '*No content*',
+                        value: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 500) ? data2.suggestion.text : `${entities.decode(data2.suggestion.text.substring(0, 500))}` : '*No content*',
                         inline: false
                       },
                       {
@@ -198,10 +200,10 @@ commands.dupe = {
                         inline: true
                       }
                       ],
-                      title: data2.suggestion.title,
+                      title: entities.decode(data2.suggestion.title),
                       description: `These suggestions will be merged.\n[Target Card](${data2.suggestion.url})\n[Merge Candidate](${data.suggestion.url})`,
                       footer: {
-                        text: data2.suggestion.category.name
+                        text: entities.decode(data2.suggestion.category.name)
                       }
                     }).then(b => {
                       r.db('DFB').table('queue').insert({
@@ -374,7 +376,7 @@ commands.registerVote = {
                         name: 'f1'
                       }, user.id))
                     })
-                  }, 2500))
+                  }, 500))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
@@ -471,7 +473,7 @@ commands.registerVote = {
                         name: 'f1'
                       }, user.id))
                     })
-                  }, 2500))
+                  }, 500))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
