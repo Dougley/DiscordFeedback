@@ -1,5 +1,7 @@
 const Discordie = require('discordie')
 const UserVoice = require('uservoice-nodejs')
+const Dash = require('rethinkdbdash')
+const r = new Dash()
 const Events = Discordie.Events
 const Config = require('./config.js')
 const logger = require('./Utils/error_loggers')
@@ -99,6 +101,12 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   setInterval(() => {
     bot.Users.fetchMembers() // Hacky way to cache offline users, #blamelazyloading
   }, 600000)
+
+  // admin-queue amount playing status
+  setInterval(() => {
+    r.db('DFB').table('queue').distinct().count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
+  }, 600000)
+
   console.log('Feedback bot is ready!')
   
   // Autorole!
