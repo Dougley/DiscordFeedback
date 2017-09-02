@@ -103,13 +103,9 @@ bot.Dispatcher.on(Events.GATEWAY_READY, () => {
   }, 600000)
 
   // admin-queue amount playing status
-  r.db('DFB').table('queue').filter(function (doc) {
-    return doc('type').match("^(adminMergeRequest|adminReviewDelete)$")
-  }).count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
+  r.db('DFB').table('queue').filter(doc => doc('type').match("^(adminMergeRequest|adminReviewDelete)$")).count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
   setInterval(() => {
-    r.db('DFB').table('queue').filter(function (doc) {
-      return doc('type').match("^(adminMergeRequest|adminReviewDelete)$")
-    }).count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
+    r.db('DFB').table('queue').filter(doc => doc('type').match("^(adminMergeRequest|adminReviewDelete)$")).count().run().then(c => bot.User.setGame(c.toString() + " reports in queue"))
   }, 60000)
 
   console.log('Feedback bot is ready!')
