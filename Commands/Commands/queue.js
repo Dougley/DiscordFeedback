@@ -133,19 +133,19 @@ commands.dupe = {
               msg.reply(`this will result in the following card.\n__Are you sure this is correct?__ (yes/no)`, false, {
                 color: 0x3498db,
                 author: {
-                  name: entities.decode(data2.suggestion.creator.name),
-                  icon_url: data2.suggestion.creator.avatar_url,
-                  url: data2.suggestion.creator.url
+                  name: data2.suggestion.creator ? entities.decode(data2.suggestion.creator.name) : 'Anonymous',
+                  icon_url: data2.suggestion.creator ? data2.suggestion.creator.avatar_url : 'https://assets1.uvcdn.com/pkg/admin/icons/user_70-62136f6de7efc58cc79dabcfed799c01.png',
+                  url: data2.suggestion.creator ? data2.suggestion.creator.url : undefined
                 },
                 title: entities.decode(data2.suggestion.title),
                 url: data2.suggestion.url,
-                description: (data2.suggestion.text !== null) ? (data2.suggestion.text.length < 1900) ? entities.decode(data2.suggestion.text) : '*Content too long*' : '*No content*',
+                description: (data2.suggestion.text) ? (data2.suggestion.text.length < 1900) ? entities.decode(data2.suggestion.text) : '*Content too long*' : '*No content*',
                 fields: [{
                   name: 'Votes',
                   value: parseInt(data.suggestion.vote_count) + parseInt(data2.suggestion.vote_count)
                 }],
                 footer: {
-                  text: (data2.suggestion.category !== null) ? entities.decode(data2.suggestion.category.name) : 'No category'
+                  text: (data2.suggestion.category) ? entities.decode(data2.suggestion.category.name) : 'No category'
                 }
               }).then(() => {
                 wait(bot, msg).then((q) => {
