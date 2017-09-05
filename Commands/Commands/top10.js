@@ -35,11 +35,12 @@ function generateTop (bot, uv) {
     channel.fetchMessages().then(msgs => {
       messages = msgs.messages.filter(y => y.author.id === bot.User.id)
       fetched = messages.length > 0
-    })
-    uv.v1.loginAsOwner().then(f => {
+      return uv.v1.loginAsOwner()
+    }).then(f => {
       f.get(`forums/${config.uservoice.forumId}/suggestions.json`, {
         per_page: 25
       }).then(data => {
+        console.log('oh shit it worked')
         for (let suggestion of data.suggestions) {
           if (counter === 10) break
           if (!suggestion.status || suggestion.status && suggestion.status.name !== 'completed') {
