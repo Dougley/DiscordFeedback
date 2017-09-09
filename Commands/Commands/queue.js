@@ -376,7 +376,7 @@ commands.registerVote = {
                         name: 'f1'
                       }, user.id))
                     })
-                  }, 500))
+                  }, 1000))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
@@ -473,7 +473,7 @@ commands.registerVote = {
                         name: 'f1'
                       }, user.id))
                     })
-                  }, 500))
+                  }, 1000))
                 }
               }).catch(e => {
                 if (e.statusCode === 404) {
