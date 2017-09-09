@@ -14,7 +14,7 @@ const bot = new Discordie({
   autoReconnect: true
 })
 
-const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})(?:-[\w-]+)?\/suggestions\/(\d{7,})(?:-[\w-]*)?/g
+const UVRegex = /https?:\/\/[\w.]+\/forums\/(\d{6,})(?:-[\w-]+)?\/suggestions\/(\d{7,})(?:-[\w-]*)?/
 
 const uvClient = {
   v1: new UserVoice.Client({
