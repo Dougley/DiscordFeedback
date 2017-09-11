@@ -34,5 +34,11 @@ module.exports = {
       '268815351360389121': 10,
       '268815286067527690': 10
     }
+  },
+  Debugging: {
+    enable: false,
+    mocking: {
+      email: 'notdougley@example.com', // email addres returned by getMail, getMail is designed to only work on production
+    }
   }
 }
