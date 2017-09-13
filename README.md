@@ -25,5 +25,5 @@ Run `npm start`, please note there will be little to no console output, this pro
 ---
 
 <p align="center">
-  <img src="https://discordapp.com/api/v7/guilds/268811439588900865/widget.png?style=banner3">
+  <a href="https://discord.gg/discord-feedback"><img src="https://discordapp.com/api/v7/guilds/268811439588900865/widget.png?style=banner3"></a>
 </p>
