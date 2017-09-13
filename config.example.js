@@ -17,6 +17,10 @@ module.exports = {
   Services: {
     sentry: ''
   },
+  Databases: {
+    redis: 'redis://127.0.0.1:6379',
+    rethinkdb: 'TBD'
+  },
   Settings: {
     roles: { 
       // these are seperate from defaultperms in constants.js, these are variable and can be overridden by roles with higher levels
