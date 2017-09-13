@@ -1,5 +1,6 @@
 const UV = require('../models/uservoice')
 const Constants = require('../../constants')
+const Redis = require('../models/redis')
 
 module.exports = {
   getMail: (userid) => {
@@ -10,9 +11,20 @@ module.exports = {
           guid: userid
         }).then(result => {
           if (!result.users || result.users.length !== 1) return reject(false)
-          else return resolve(result.users[0].email)
+          else {
+            Redis.set(`email:${userid}`, result.users[0].email)
+            return resolve(result.users[0].email)
+          }
         }).catch(reject)
       }).catch(reject)
+    })
+  },
+  getMailCached: (userid) => {
+    return new Promise((resolve, reject) => {
+      Redis.get(`email:${userid}`).then(res => {
+        if (res !== null) return resolve(res)
+        else return this.getMail(userid)
+      })
     })
   }
 }
