@@ -23,7 +23,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       Redis.get(`email:${userid}`).then(res => {
         if (res !== null) return resolve(res)
-        else return this.getMail(userid)
+        else return module.exports.getMail(userid)
       })
     })
   }
