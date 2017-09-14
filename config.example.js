@@ -19,7 +19,15 @@ module.exports = {
   },
   Databases: {
     redis: 'redis://127.0.0.1:6379',
-    rethinkdb: 'TBD'
+    rethinkdb: {
+      db: 'DFB',
+      servers: [
+        {
+          host: '127.0.0.1',
+          port: 28015
+        }
+      ]
+    }
   },
   Settings: {
     roles: { 
