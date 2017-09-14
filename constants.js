@@ -35,6 +35,9 @@ module.exports = {
       '268815286067527690': 10
     }
   },
+  Timeouts: { // everything is in ms
+    messagedelete: 2500
+  },
   Debugging: {
     enable: false,
     mocking: {
