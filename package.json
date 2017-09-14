@@ -40,6 +40,7 @@
     "moment": "^2.18.1",
     "raven": "^2.1.2",
     "require-directory": "^2.1.1",
+    "requireindex": "^1.1.0",
     "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"
   }
