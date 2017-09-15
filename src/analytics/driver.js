@@ -12,5 +12,10 @@ module.exports = {
     return r.table('analytics').get(userid).update({
       [datapoint]: r.row(datapoint).default(0).add(1)
     }).run()
+  },
+  touch: (userid) => {
+    return r.table('analytics').get(userid).update({
+      last_seen: new Date(Moment().startOf('day')).getTime().toString()
+    }).run()
   }
 }
