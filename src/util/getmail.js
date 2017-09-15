@@ -12,7 +12,7 @@ module.exports = {
         }).then(result => {
           if (!result.users || result.users.length !== 1) return reject(false)
           else {
-            Redis.set(`email:${userid}`, result.users[0].email)
+            Redis.set(`email:${userid}`, result.users[0].email).catch(reject)
             return resolve(result.users[0].email)
           }
         }).catch(reject)
@@ -24,7 +24,7 @@ module.exports = {
       Redis.get(`email:${userid}`).then(res => {
         if (res !== null) return resolve(res)
         else return module.exports.getMail(userid)
-      })
+      }).catch(reject)
     })
   }
 }
