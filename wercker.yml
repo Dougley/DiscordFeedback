@@ -12,5 +12,5 @@ build:
         code: |
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-    - wantedly/step-pretty-slack-notify:
+    - Dougley/step-pretty-slack-notify:
         webhook_url: $DISCORD_WEBHOOK_URL
