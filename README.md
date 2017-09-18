@@ -1,4 +1,6 @@
 # DiscordFeedback
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/SteamingMutt/DiscordFeedback.svg)](https://greenkeeper.io/)
 The bot that powers the Discord Feedback server
 
 # Selfhosting
