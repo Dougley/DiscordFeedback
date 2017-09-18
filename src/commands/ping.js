@@ -1,6 +1,6 @@
 module.exports = {
   meta: {
-    level: 0
+    level: 10
   },
   fn: (msg) => {
     msg.reply('Pong!')

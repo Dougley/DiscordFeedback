@@ -9,6 +9,7 @@ module.exports = {
     return r.table('analytics').get(userid).update(details).run()
   },
   increment: (userid, datapoint) => {
+    module.exports.touch(userid)
     return r.table('analytics').get(userid).update({
       [datapoint]: r.row(datapoint).default(0).add(1)
     }).run()
