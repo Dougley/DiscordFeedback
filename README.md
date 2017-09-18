@@ -2,6 +2,9 @@
 
 # DiscordFeedback
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/SteamingMutt/DiscordFeedback.svg)](https://greenkeeper.io/)
+The bot that powers the Discord Feedback server
+
 <a href="https://app.wercker.com/project/byKey/4ea0bd97b04cf0912ac4276011af43d7"><img alt="Wercker status" src="https://app.wercker.com/status/4ea0bd97b04cf0912ac4276011af43d7/m/master" align="right" /></a>
 
 This is the bot that powers the Discord Feedback server, developed by volunteers on their spare time.
