@@ -4,18 +4,6 @@ services:
     - redis
 build:
   steps:
-    - script:
-        name: "wait for redis to become alive"
-        code: |
-        while ! nc -q 1 $REDIS_PORT_6379_TCP_ADDR $REDIS_PORT_6379_TCP_PORT
-        </dev/null; do sleep 3; done
-
-    - script:
-        name: "wait for rethink to become alive"
-        code: |
-        while ! nc -q 1 $RETHINKDB_PORT_28015_TCP_ADDR $REDIS_PORT_28015_TCP_PORT
-        </dev/null; do sleep 3; done
-
     - npm-install
     - npm-test
 
