@@ -8,10 +8,10 @@ module.exports = {
   modify: (userid, details) => {
     return r.table('analytics').get(userid).update(details).run()
   },
-  increment: (userid, datapoint) => {
+  increment: (userid, datapoint, add = 1) => {
     module.exports.touch(userid)
     return r.table('analytics').get(userid).update({
-      [datapoint]: r.row(datapoint).default(0).add(1)
+      [datapoint]: r.row(datapoint).default(0).add(add)
     }).run()
   },
   touch: (userid) => {

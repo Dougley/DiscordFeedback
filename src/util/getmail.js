@@ -7,16 +7,16 @@ module.exports = {
     return new Promise((resolve, reject) => {
       if (Constants.Debugging.enable) return resolve(Constants.Debugging.mocking.email)
       UV.v1.loginAsOwner().then(client => {
-        client.get('users/search.json', {
+        return client.get('users/search.json', {
           guid: userid
-        }).then(result => {
-          if (!result.users || result.users.length !== 1) return reject(false)
-          else {
-            Redis.set(`email:${userid}`, result.users[0].email).catch(reject)
-            return resolve(result.users[0].email)
-          }
-        }).catch(reject)
-      }).catch(reject)
+        })
+      }).then(result => {
+        if (!result.users || result.users.length !== 1) return reject(false)
+        else {
+          Redis.set(`email:${userid}`, result.users[0].email)
+          return resolve(result.users[0].email)
+        }
+      }).catch(console.error)
     })
   },
   getMailCached: (userid) => {

@@ -10,7 +10,10 @@ module.exports = function (ctx) {
     if (Commands[cmd]) {
       if (!Commands[cmd].meta.enabledms && ctx.message.isPrivate) return ctx.channel.sendMessage('This command cannot be used in DMs.')
       AccessCheck.check(ctx.message.member).then(result => {
-        if (result >= Commands[cmd].meta.level) Commands[cmd].fn(ctx.message, suffix)
+        // eslint-disable-next-line promise/always-return
+        if (result >= Commands[cmd].meta.level) return Commands[cmd].fn(ctx.message, suffix)
+      }).catch(e => {
+        console.error(e)
       })
     }
   }
