@@ -16,7 +16,7 @@ This is the bot that powers the Discord Feedback server, developed by volunteers
 
 ## Development
 
-You can find code style & other details for contributing (such as tools we use) in the [CONTRIBUTING.MD](DiscordFeedback/.github/CONTRIBUTING.md)
+You can find code style & other details for contributing (such as tools we use) in the [CONTRIBUTING.MD](/.github/CONTRIBUTING.md)
 
 ### Config
 
