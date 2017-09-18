@@ -12,3 +12,8 @@ build:
         code: |
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
+  after-steps:
+    - install-packages:
+            packages: ruby
+    - wantedly/pretty-slack-notify:
+            webhook_url: $DISCORD_WEBHOOK_URL
