@@ -4,8 +4,7 @@
   "description": "Bot for the Discord Feedback server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/eslint/bin/eslint.js .",
+    "test": "node_modules/eslint/bin/eslint.js .",
     "start": "node index.js",
     "dbcreate": "node Utils/dbinit.js"
   },
