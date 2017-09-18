@@ -1,6 +1,19 @@
 **Thanks for taking the time to contribute!**  
 Please follow the rules below when making contributions to this project.
 
+# Wanted and unwanted contributions
+We appriciate all the help we can get, but we'd prefer it if you didnt submit issues/PRs if we consider them unwanted.
+
+### Unwanted contributions
+- Small nitpicky changes (spelling, grammar)
+- Extremely breaking changes (overhauling layouts of integral files like config)
+- **Changes to the way EXP is counted**
+
+### Wanted contributions
+Generally everything that doesn't fit in the unwanted category is wanted, for example:
+- Bugfixes
+- Feature additions
+
 # Code style
 We follow [Standard.js](https://standardjs.com/) as our base code style, but we have a few other additional rules too.
 
