@@ -1,5 +1,5 @@
 // WOW THESE THINGS HAVE THEIR OWN FILE NOW
-// THIS SHOULD'VE HAPPEND WHEN I STARTED THIS PROJECT
+// THIS SHOULD'VE HAPPENED WHEN I STARTED THIS PROJECT
 // WOW
 
 module.exports = { 
@@ -37,6 +37,10 @@ module.exports = {
   },
   Timeouts: { // everything is in ms
     messagedelete: 2500
+  },
+  Leaderboards: {
+    enabled: true,
+    cutoff: 10 // top-howmany?
   },
   Debugging: {
     enable: false,

@@ -2,7 +2,7 @@
 Please follow the rules below when making contributions to this project.
 
 # Wanted and unwanted contributions
-We appriciate all the help we can get, but we'd prefer it if you didnt submit issues/PRs if we consider them unwanted.
+We appriciate all the help we can get, but we'd prefer it if you didn't submit issues/PRs if we consider them unwanted.
 
 ### Unwanted contributions
 - Small nitpicky changes (spelling, grammar)
