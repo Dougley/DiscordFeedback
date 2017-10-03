@@ -1,5 +1,4 @@
 const r = require('../models/rethinkdb')
-const EXP = require('../analytics/exp-driver')
 const Constants = require('../../constants')
 
 module.exports = {
