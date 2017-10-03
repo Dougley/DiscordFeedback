@@ -4,6 +4,7 @@ module.exports = {
     prefix: '!',
   }, 
   Uservoice: {
+    forumID: '',
     domains: {
       uservoicesub: 'discordapp', // *.uservoice.om, not your custom domain
       sub: 'feedback',
