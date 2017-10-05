@@ -4,8 +4,7 @@
   "description": "Bot for the Discord Feedback server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/eslint/bin/eslint.js .",
+    "test": "node_modules/eslint/bin/eslint.js .",
     "start": "node index.js",
     "dbcreate": "node Utils/dbinit.js"
   },
@@ -13,13 +12,11 @@
     "type": "git",
     "url": "git+https://github.com/SteamingMutt/DiscordFeedback.git"
   },
-  "maintainers": [
-    {
-      "name": "Benjamin Hoffmeyer (TheDoctorsLife)",
-      "email": "admin@doc.tors.life",
-      "url": "https://doc.tors.life"
-    }
-  ],
+  "maintainers": [{
+    "name": "Benjamin Hoffmeyer (TheDoctorsLife)",
+    "email": "admin@doc.tors.life",
+    "url": "https://doc.tors.life"
+  }],
   "author": "Remco Jongschaap <hello@dougley.com>",
   "license": "GPL-3.0",
   "bugs": {
@@ -27,10 +24,11 @@
   },
   "homepage": "https://github.com/SteamingMutt/DiscordFeedback#readme",
   "devDependencies": {
-    "eslint": "^4.7.0",
+    "ajv": "^5.2.3",
+    "eslint": "^4.8.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-node": "^5.2.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1"
   },
@@ -39,7 +37,7 @@
     "git-rev-sync": "^1.9.1",
     "html-entities": "^1.2.1",
     "moment": "^2.18.1",
-    "raven": "^2.1.2",
+    "raven": "^2.2.0",
     "require-directory": "^2.1.1",
     "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"
