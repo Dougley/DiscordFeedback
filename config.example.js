@@ -1,31 +1,52 @@
 module.exports = {
-  discord: {
-    token: 'MTXQIAUk_oxWYymVxOGJTdgEEHZancmLvDsavtVmcYykatlA.zyvIxLvNpGGPAaAU_PQ.NvU', // (Not an actual token, don't worry) Enter a Discord bot token here.
-    prefix: '!', // Bot prefix for all commands
-    reportThreshold: 3,
-    feedChannel: 'snowflake',
-    messageCacheLimit: '1000', // Sets the maximum amount of messages in the cache this will help keep memory in check.
-    guild: '268811439588900865',
-    Roles: { // Array of the different Roles
-      adminRoles: ['259023993124683776'], // Array of roles for users who can use ALL commands
-      moderatorRoles: ['162946809294094336'] // Array of roles for users who can delete, modify and approve others feedback
+  Discord: {
+    token: 'wowie',
+    prefix: '!',
+  }, 
+  Uservoice: {
+    forumID: '',
+    domains: {
+      uservoicesub: 'discordapp', // *.uservoice.om, not your custom domain
+      sub: 'feedback',
+      domain: 'discordapp.com'
+    },
+    keys: {
+      apikey: 'loldiscord',
+      apisecret: 'loldiscord'
     }
   },
-  uservoice: {
-    UVDomain: 'discordapp', // *.uservoice.com, THIS IS NOT YOUR CUSTOM DOMAIN
-    subdomain: 'feedback', // UserVoice subdomain
-    domain: 'discordapp.com', // UserVoice domain
-    key: 'loldiscord', // UserVoice API key
-    secret: 'loldiscord', // UserVoice API secret
-    forumId: '575944', // ID of the suggestions forum
-    forumName: 'test' // URL name of suggestions forum
+  Services: {
+    sentry: ''
   },
-  services: {
-    sentry: 'omerghard'
+  Databases: {
+    redis: 'redis://127.0.0.1:6379',
+    rethinkdb: {
+      db: 'DFB',
+      servers: [
+        {
+          host: '127.0.0.1',
+          port: 28015
+        }
+      ]
+    }
   },
-  timeouts: {
-    messageDelete: 2000, // 2 seconds
-    errorMessageDelete: 5000, // 5 seconds
-    duplicateConfirm: 15000 // 15 seconds
+  Settings: {
+    roles: { 
+      // these are seperate from defaultperms in constants.js, these are variable and can be overridden by roles with higher levels
+      // defaultperms default to the value given and doesnt care about if you have other roles that have other permissions
+      '268815388882632704': 1,
+      '273149949720526848': 2,
+      '273149954120482816': 3,
+      '273149954850160640': 4,
+      '273149955512860673': 5,
+      '273149956167172107': 6
+    },
+    guild: {
+      id: '268811439588900865',
+      feed: '258274103935369219'
+    },
+    reports: {
+      threshold: 3
+    }
   }
 }

@@ -36,9 +36,11 @@
     "discordie": "git://github.com/qeled/discordie.git#dev",
     "git-rev-sync": "^1.9.1",
     "html-entities": "^1.2.1",
+    "ioredis": "^3.1.4",
     "moment": "^2.18.1",
     "raven": "^2.2.0",
     "require-directory": "^2.1.1",
+    "requireindex": "^1.1.0",
     "rethinkdbdash": "^2.3.29",
     "uservoice-nodejs": "^0.0.13"
   }
